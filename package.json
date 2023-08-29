@@ -1,0 +1,32 @@
+{
+    "name": "radicalvpn_backend",
+    "version": "0.0.1",
+    "description": "The management Backend of the Radical VPN service",
+    "main": "index.js",
+    "scripts": {
+        "start": "npx nodemon",
+        "format": "npx prettier . --write",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "Johann",
+    "license": "ISC",
+    "devDependencies": {
+        "@types/express": "^4.17.17",
+        "@types/express-session": "^1.17.7",
+        "@types/node": "^20.5.7",
+        "nodemon": "^3.0.1",
+        "prettier": "3.0.3",
+        "ts-node": "^10.9.1",
+        "typescript": "^5.2.2"
+    },
+    "dependencies": {
+        "ajv": "^8.12.0",
+        "ajv-formats": "^2.1.1",
+        "connect-redis": "^7.1.0",
+        "express": "^4.18.2",
+        "express-session": "^1.17.3",
+        "knex": "^2.5.1",
+        "redis": "^4.6.8",
+        "sqlite3": "^5.1.6"
+    }
+}
