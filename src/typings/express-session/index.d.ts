@@ -7,7 +7,8 @@ declare module "express-session" {
         userInfo: {
             email: string
             username: string
-            id: string
+            id: number
+            active: boolean
         }
     }
 }

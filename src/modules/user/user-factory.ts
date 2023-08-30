@@ -1,9 +1,9 @@
-import { db } from "../database"
+import { db } from "../../database"
 import * as crypto from "crypto"
+import { User, UserData } from "./user"
 
 export class UserCreationError extends Error {}
-
-export class User {
+export class UserFactory {
     static pbkdf2Config = {
         iterations: 600_123,
         keyLen: 64,
@@ -11,7 +11,10 @@ export class User {
     }
 
     async add(username: string, email: string, password: string) {
-        if (await this.findUserByEmail(email)) {
+        if (
+            (await this.findUserByEmail(email)) ||
+            (await this.findUserByName(username))
+        ) {
             throw new UserCreationError(`User ${username} already exists`)
         }
 
@@ -33,23 +36,39 @@ export class User {
 
         const hash = this.generatePbkfs2Hash(
             Buffer.from(password),
-            Buffer.from(user.passwordSalt, "hex"),
+            Buffer.from(user.data.passwordSalt, "hex"),
         )
 
-        return hash.toString("hex") === user.passwordHash
+        return hash.toString("hex") === user.data.passwordHash
     }
 
-    private async findUserByEmail(email: string) {
-        return (await db.table("users").select("*").where("email", email))?.[0]
+    async findUserByEmail(email: string): Promise<User | undefined> {
+        const userData: UserData | undefined = (
+            await db.table("users").select("*").where("email", email)
+        )?.[0]
+
+        if (!userData) return
+
+        return new User(userData)
+    }
+
+    async findUserByName(username: string): Promise<User | undefined> {
+        const userData: UserData | undefined = (
+            await db.table("users").select("*").where("username", username)
+        )?.[0]
+
+        if (!userData) return
+
+        return new User(userData)
     }
 
     private generatePbkfs2Hash(password: Buffer, salt: Buffer) {
         return crypto.pbkdf2Sync(
             password,
             salt,
-            User.pbkdf2Config.iterations,
-            User.pbkdf2Config.keyLen,
-            User.pbkdf2Config.digest,
+            UserFactory.pbkdf2Config.iterations,
+            UserFactory.pbkdf2Config.keyLen,
+            UserFactory.pbkdf2Config.digest,
         )
     }
 }

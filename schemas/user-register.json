@@ -1,0 +1,16 @@
+{
+    "$id": "http://radicalvpn.com/schemas/register",
+    "type": "object",
+    "properties": {
+        "username": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 10,
+            "pattern": "^[a-zA-Z]+$"
+        },
+        "email": { "type": "string", "format": "email" },
+        "password": { "type": "string", "minLength": 8 }
+    },
+    "required": ["username", "email", "password"],
+    "additionalProperties": false
+}
