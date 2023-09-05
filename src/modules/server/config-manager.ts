@@ -21,7 +21,7 @@ export class ConfigManager {
                         "[Peer]",
                         `PublicKey = ${client.pub}`,
                         `PresharedKey = ${client.psk}`,
-                        `AllowedIPs = ${client.ipv4}/32`,
+                        `AllowedIPs = ${client.ipv4}/32, ${client.ipv6}/128`,
                         "",
                     ].join("\n"),
                 )

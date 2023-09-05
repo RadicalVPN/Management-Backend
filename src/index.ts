@@ -52,7 +52,7 @@ import * as util from "./util"
     await ConfigManager.initConfigDir()
     await ConfigManager.publishServerConfig(false)
     await util.exec("wg-quick down wg0").catch(() => {})
-    await util.exec("wg-quick up wg0").catch(() => {})
+    await util.exec("wg-quick up wg0")
 
     app.listen(config.SERVER.HTTP_PORT, () => {
         console.log(
