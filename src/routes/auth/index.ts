@@ -1,6 +1,6 @@
-import express, { Router } from "express"
+import { Router } from "express"
+import { UserCreationError, UserFactory } from "../../modules/user/user-factory"
 import { JSONSchemaValidator } from "../../schema-validator"
-import { UserFactory, UserCreationError } from "../../modules/user/user-factory"
 
 export default Router({ mergeParams: true })
     .get("/", async (req, res, next) => {
@@ -45,10 +45,10 @@ export default Router({ mergeParams: true })
 
         req.session.authed = true
         req.session.userInfo = {
-            active: realUser.data.active == 1,
-            email: realUser.data.email,
-            username: realUser.data.username,
-            id: realUser.data.id,
+            active: realUser.userData.active == 1,
+            email: realUser.userData.email,
+            username: realUser.userData.username,
+            id: realUser.userData.id,
         }
 
         res.status(200).send()

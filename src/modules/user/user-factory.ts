@@ -1,5 +1,5 @@
-import { db } from "../../database"
 import * as crypto from "crypto"
+import { db } from "../../database"
 import { User, UserData } from "./user"
 
 export class UserCreationError extends Error {}
@@ -36,10 +36,10 @@ export class UserFactory {
 
         const hash = this.generatePbkfs2Hash(
             Buffer.from(password),
-            Buffer.from(user.data.passwordSalt, "hex"),
+            Buffer.from(user.userData.passwordSalt, "hex"),
         )
 
-        return hash.toString("hex") === user.data.passwordHash
+        return hash.toString("hex") === user.userData.passwordHash
     }
 
     async findUserByEmail(email: string): Promise<User | undefined> {

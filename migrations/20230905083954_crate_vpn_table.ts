@@ -5,6 +5,8 @@ export async function up(knex: Knex): Promise<void> {
         table.increments()
 
         table.string("alias")
+        table.string("ipv4")
+        table.string("ipv6")
         table.string("pub")
         table.string("priv")
         table.string("psk")

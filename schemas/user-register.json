@@ -5,7 +5,7 @@
         "username": {
             "type": "string",
             "minLength": 5,
-            "maxLength": 10,
+            "maxLength": 20,
             "pattern": "^[a-zA-Z]+$"
         },
         "email": { "type": "string", "format": "email" },

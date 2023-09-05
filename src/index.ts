@@ -1,10 +1,12 @@
-import { config } from "./config"
-import * as util from "./util"
-import express from "express"
-import mainRouter from "./routes/index"
-import expressSession from "express-session"
 import RedisStore from "connect-redis"
-import { createClient } from "redis"
+import express from "express"
+import expressSession from "express-session"
+import morgan from "morgan"
+import { config } from "./config"
+import { Redis } from "./modules/Redis"
+import { ConfigManager } from "./modules/server/config-manager"
+import mainRouter from "./routes/index"
+import * as util from "./util"
 ;(async () => {
     try {
         const wgVersion = (await util.exec("wg --version")).split(" ")[1]
@@ -16,12 +18,9 @@ import { createClient } from "redis"
 
     const app = express()
 
-    let redisClient = createClient()
-    redisClient.connect().catch(console.error)
-
     // Initialize store.
     let redisStore = new RedisStore({
-        client: redisClient,
+        client: await Redis.getInstance(),
         prefix: "radical_vpn:session:",
     })
 
@@ -45,9 +44,15 @@ import { createClient } from "redis"
 
     app.use(expressSession(sessionConfig))
     app.use(express.json())
+    app.use(morgan("dev"))
 
     //register main router
     app.use(mainRouter)
+
+    await ConfigManager.initConfigDir()
+    await ConfigManager.publishServerConfig(false)
+    await util.exec("wg-quick down wg0").catch(() => {})
+    await util.exec("wg-quick up wg0").catch(() => {})
 
     app.listen(config.SERVER.HTTP_PORT, () => {
         console.log(

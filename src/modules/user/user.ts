@@ -10,9 +10,9 @@ export interface UserData {
 }
 
 export class User {
-    data: UserData
+    userData: UserData
 
     constructor(data: UserData) {
-        this.data = data
+        this.userData = data
     }
 }

@@ -1,4 +1,6 @@
 import { NextFunction, Request, Response } from "express"
+import { User } from "../modules/user/user"
+import { UserFactory } from "../modules/user/user-factory"
 
 export async function authenticate(
     req: Request,
@@ -13,6 +15,13 @@ export async function authenticate(
     if (!req.session.userInfo?.active) {
         return res.status(401).send("user locked")
     }
+
+    // @ts-ignore
+    req.locals = {}
+
+    req.locals.user = (await new UserFactory().findUserByName(
+        req.session.userInfo.username,
+    )) as User
 
     next()
 }

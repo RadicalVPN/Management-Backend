@@ -1,0 +1,14 @@
+{
+    "$id": "http://radicalvpn.com/schemas/vpn/create",
+    "type": "object",
+    "properties": {
+        "alias": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 30,
+            "pattern": "^[a-zA-Z1-9 ]+$"
+        }
+    },
+    "required": ["alias"],
+    "additionalProperties": false
+}
