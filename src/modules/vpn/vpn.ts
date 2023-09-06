@@ -23,6 +23,7 @@ export class VPN {
             "[Interface]",
             `PrivateKey = ${this.data.priv}`,
             `Address = ${this.data.ipv4}/32, ${this.data.ipv6}/128`,
+            "DNS = 1.1.1.1, 1.0.0.1",
             "",
             "[Peer]",
             `PublicKey = ${Config.VPN.SECRETS.PUBLIC_KEY}`,
