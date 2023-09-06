@@ -29,7 +29,7 @@ export class VPN {
             `PresharedKey = ${this.data.psk}`,
             `AllowedIPs = 0.0.0.0/0, ::/0`,
             `PersistentKeepalive = 25`,
-            "Endpoint = 127.0.0.1:51820",
+            `Endpoint = ${Config.VPN.ENDPOINT_IP}:51820`,
         ].join("\n")
     }
 

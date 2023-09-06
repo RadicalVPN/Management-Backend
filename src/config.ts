@@ -13,7 +13,6 @@ function parseEnviromentVariable(envVariable: string, defaultValue?: string) {
 }
 
 export const config = {
-    VPN_ENDPOINT: parseEnviromentVariable("RADICAL_VPN_ENDPOINT", "127.0.0.1"),
     SERVER: {
         HTTP_PORT: parseInt(
             parseEnviromentVariable("RADICAL_VPN_BACKEND_HTTP_PORT", "8080"),
@@ -45,5 +44,9 @@ export const config = {
                 "a4nE00KqoC5ibugA//Wi+ImOjmGFF+BCRW1V1NS0EBk=",
             ),
         },
+        ENDPOINT_IP: parseEnviromentVariable(
+            "RADICAL_VPN_BACKEND_VPN_ENDPOINT_IP",
+            "127.0.0.1",
+        ),
     },
 }
