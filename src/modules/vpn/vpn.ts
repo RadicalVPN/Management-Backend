@@ -1,4 +1,5 @@
 import { config as Config } from "../../config"
+import { exec } from "../../util"
 
 export interface VPNdata {
     id: number
@@ -30,5 +31,64 @@ export class VPN {
             `PersistentKeepalive = 25`,
             "Endpoint = 127.0.0.1:51820",
         ].join("\n")
+    }
+
+    async getInfo() {
+        const status = await this.parseCliData()
+
+        return {
+            id: this.data.id,
+            active: this.data.active == 1,
+            alias: this.data.alias,
+            createdAt: this.data.createdAt,
+            updatedAt: this.data.updatedAt,
+            status: {
+                allowedIps: status.allowedIps,
+                latestHandshakeAt: status.latestHandshakeAt,
+                transfer: {
+                    rx: status.transferRx,
+                    tx: status.transferTx,
+                },
+                persistentKeepalive: status.persistentKeepalive,
+            },
+        }
+    }
+
+    async parseCliData() {
+        const wireguardStatus = await exec("wg show wg0 dump")
+
+        return wireguardStatus
+            .trim()
+            .split("\n")
+            .slice(1)
+            .map(this.parseVpnStatusLine)
+            .filter((vpn) => vpn.publicKey === this.data.pub)[0]
+    }
+
+    private parseVpnStatusLine(line: string) {
+        const [
+            publicKey,
+            preSharedKey,
+            endpoint,
+            allowedIps,
+            latestHandshakeAt,
+            transferRx,
+            transferTx,
+            persistentKeepalive,
+        ] = line.split("\t")
+
+        return {
+            publicKey,
+            preSharedKey,
+            endpoint,
+            allowedIps: allowedIps.split(","),
+            latestHandshakeAt:
+                latestHandshakeAt === "0"
+                    ? null
+                    : new Date(`${parseInt(latestHandshakeAt)}000`),
+            transferRx: parseInt(transferRx),
+            transferTx: parseInt(transferTx),
+            persistentKeepalive,
+        }
     }
 }

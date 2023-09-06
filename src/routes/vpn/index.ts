@@ -5,17 +5,12 @@ import { JSONSchemaValidator } from "../../schema-validator"
 export default Router({ mergeParams: true })
     .get("", async (req, res, next) => {
         const vpnFactory = new VPNFactory(req.locals.user.userData)
-        const vpns = await vpnFactory.getAll()
 
-        res.send(
-            vpns.map((vpn) => ({
-                id: vpn.data.id,
-                active: vpn.data.active == 1,
-                alias: vpn.data.alias,
-                createdAt: vpn.data.createdAt,
-                updatedAt: vpn.data.updatedAt,
-            })),
+        const vpns = await Promise.all(
+            (await vpnFactory.getAll()).map(async (vpn) => vpn.getInfo()),
         )
+
+        res.send(vpns)
     })
     .put("", async (req, res, next) => {
         const data = req.body
@@ -49,13 +44,7 @@ export default Router({ mergeParams: true })
         const vpn = await vpnFactory.get(req.params.id)
         if (!vpn) return res.status(404).send()
 
-        res.send({
-            id: vpn.data.id,
-            active: vpn.data.active == 1,
-            alias: vpn.data.alias,
-            createdAt: vpn.data.createdAt,
-            updatedAt: vpn.data.updatedAt,
-        })
+        res.send(await vpn.getInfo())
     })
     .get("/:id/config", async (req, res, next) => {
         const vpnFactory = new VPNFactory(req.locals.user.userData)
