@@ -1,3 +1,7 @@
+import * as dotenv from "dotenv"
+
+dotenv.config()
+
 function parseEnviromentVariable(envVariable: string, defaultValue?: string) {
     const env = process.env[envVariable]
 
