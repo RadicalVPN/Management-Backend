@@ -1,4 +1,5 @@
 import { config as Config } from "../../config"
+import { db } from "../../database"
 import { exec } from "../../util"
 
 export interface VPNdata {
@@ -53,6 +54,14 @@ export class VPN {
                 persistentKeepalive: status.persistentKeepalive,
             },
         }
+    }
+
+    async toggle() {
+        await db
+            .table("vpns")
+            .update({ active: this.data.active == 1 ? 0 : 1 })
+            .where("id", this.data.id)
+            .where("userId", this.data.userId)
     }
 
     async parseCliData() {
