@@ -11,7 +11,7 @@ export class VPNFactory extends User {
     }
 
     static async getFromAllUsers() {
-        return await db.table("vpns").select("*")
+        return await db.table("vpns").select("*").where("active", 1)
     }
 
     async getAll() {
