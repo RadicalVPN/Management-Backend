@@ -46,13 +46,13 @@ export class VPN {
             createdAt: this.data.createdAt,
             updatedAt: this.data.updatedAt,
             status: {
-                allowedIps: status.allowedIps,
-                latestHandshakeAt: status.latestHandshakeAt,
+                allowedIps: status?.allowedIps || [],
+                latestHandshakeAt: status?.latestHandshakeAt || "N/A",
                 transfer: {
-                    rx: status.transferRx,
-                    tx: status.transferTx,
+                    rx: status?.transferRx || 0,
+                    tx: status?.transferTx || 0,
                 },
-                persistentKeepalive: status.persistentKeepalive,
+                persistentKeepalive: status?.persistentKeepalive || "N/A",
             },
         }
     }
