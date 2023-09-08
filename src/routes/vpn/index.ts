@@ -59,7 +59,7 @@ export default Router({ mergeParams: true })
         )
         res.contentType("png").send(qr)
     })
-    .get("/:id/toggle", async (req, res, next) => {
+    .post("/:id/toggle", async (req, res, next) => {
         const vpnFactory = new VPNFactory(req.locals.user.userData)
         const vpn = await vpnFactory.get(req.params.id)
         if (!vpn) return res.status(404).send()
