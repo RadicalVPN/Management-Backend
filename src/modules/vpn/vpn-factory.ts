@@ -36,13 +36,11 @@ export class VPNFactory extends User {
     }
 
     async delete(id: string) {
-        return (
-            await db
-                .table("vpns")
-                .delete("*")
-                .where("userId", this.userData.id)
-                .where("id", id)
-        )?.[0]
+        await db
+            .table("vpns")
+            .del()
+            .where("userId", this.userData.id)
+            .where("id", id)
     }
 
     async add(alias: string) {
