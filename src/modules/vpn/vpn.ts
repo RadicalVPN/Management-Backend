@@ -1,6 +1,7 @@
 import { config as Config } from "../../config"
 import { db } from "../../database"
 import { exec } from "../../util"
+import { ConfigManager } from "../server/config-manager"
 
 export interface VPNdata {
     id: number
@@ -62,6 +63,8 @@ export class VPN {
             .update({ active: this.data.active == 1 ? 0 : 1 })
             .where("id", this.data.id)
             .where("userId", this.data.userId)
+
+        await ConfigManager.publishServerConfig()
     }
 
     async parseCliData() {
