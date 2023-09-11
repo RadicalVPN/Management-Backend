@@ -47,7 +47,7 @@ export default Router({ mergeParams: true })
             return res.status(500).send()
         }
 
-        if (totp(secret, { timestamp: Date.now() }) !== userToken) {
+        if (totp(secret) !== userToken) {
             return res.status(401).send("invalid totp token")
         }
 

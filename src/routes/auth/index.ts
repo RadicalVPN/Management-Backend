@@ -1,4 +1,5 @@
 import { Router } from "express"
+import totp from "totp-generator"
 import { User } from "../../modules/user/user"
 import { UserCreationError, UserFactory } from "../../modules/user/user-factory"
 import { JSONSchemaValidator } from "../../schema-validator"
@@ -49,6 +50,18 @@ export default Router({ mergeParams: true })
 
         const realUser = await userFactory.findUserByEmail(data.email)
         if (!realUser) return res.status(404).send("user not found")
+
+        const totpToken = data.totpToken
+        const totpRequired = await realUser.isTotpEnabled()
+        if (totpRequired && !totpToken) {
+            return res.status(401).send("totp required")
+        }
+
+        if (totpRequired && totpToken) {
+            if (totp(await realUser.generateTotpSecret()) !== totpToken) {
+                return res.status(401).send("invalid totp token")
+            }
+        }
 
         //..now we got our valid user object
 
