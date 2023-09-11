@@ -1,4 +1,5 @@
 import fs from "fs/promises"
+import os from "os"
 import path from "path"
 import { config as Config } from "../../config"
 import { exec, fileExists } from "../../util"
@@ -6,7 +7,7 @@ import { VPNFactory } from "../vpn/vpn-factory"
 
 export class ConfigManager {
     static async initConfigDir() {
-        if (!(await fileExists(Config.VPN.PATH))) {
+        if (!(await fileExists(Config.VPN.PATH)) && os.platform() === "linux") {
             await fs.mkdir(Config.VPN.PATH)
         }
     }
@@ -43,11 +44,12 @@ export class ConfigManager {
             ...clients,
         ].join("\n")
 
-        await fs.writeFile(path.join(Config.VPN.PATH, "wg0.conf"), config, {
-            mode: 0o600,
-        })
-
-        if (syncConfig) {
+        if (os.platform() === "linux") {
+            await fs.writeFile(path.join(Config.VPN.PATH, "wg0.conf"), config, {
+                mode: 0o600,
+            })
+        }
+        if (syncConfig && os.platform() === "linux") {
             console.log("syncing wireguard config..")
             await exec("wg syncconf wg0 <(wg-quick strip wg0)")
         }

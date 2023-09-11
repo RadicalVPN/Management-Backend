@@ -1,4 +1,5 @@
 import { Router } from "express"
+import { User } from "../../modules/user/user"
 import { UserCreationError, UserFactory } from "../../modules/user/user-factory"
 import { JSONSchemaValidator } from "../../schema-validator"
 
@@ -12,7 +13,15 @@ export default Router({ mergeParams: true })
             return res.status(400).send("user locked")
         }
 
-        res.send(req.session.userInfo)
+        const user = (await new UserFactory().findUserByName(
+            req.session?.userInfo?.username || "",
+        )) as User
+        if (!user) return res.status(500).send()
+
+        res.send({
+            ...req.session.userInfo,
+            totp: await user.isTotpEnabled(),
+        })
     })
     .post("/", async (req, res, next) => {
         if (req.session?.authed === true) {

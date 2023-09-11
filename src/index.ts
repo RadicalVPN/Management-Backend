@@ -2,6 +2,7 @@ import RedisStore from "connect-redis"
 import express from "express"
 import expressSession from "express-session"
 import morgan from "morgan"
+import os from "os"
 import { config } from "./config"
 import { Redis } from "./modules/Redis"
 import { ConfigManager } from "./modules/server/config-manager"
@@ -51,9 +52,11 @@ import * as util from "./util"
 
     await ConfigManager.initConfigDir()
     await ConfigManager.publishServerConfig(false)
-    await util.exec("wg-quick down wg0").catch(() => {})
-    await util.exec("wg-quick up wg0")
 
+    if (os.platform() === "linux") {
+        await util.exec("wg-quick down wg0").catch(() => {})
+        await util.exec("wg-quick up wg0")
+    }
     app.listen(config.SERVER.HTTP_PORT, () => {
         console.log(
             `Started Radical VPN Backend Server on 127.0.0.1:${config.SERVER.HTTP_PORT}`,
