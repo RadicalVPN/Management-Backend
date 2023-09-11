@@ -73,7 +73,6 @@ export class UserFactory {
     }
 
     static computeTotpUri(secret: string, email: string, username: string) {
-        "otpauth://totp/Example:alice@google.com?secret=JBSWY3DPEHPK3PXP&issuer=Example"
         return `otpauth://totp/${username}:${email}@test.test?secret=${secret}&issuer=RadicalVPN`
     }
 }
