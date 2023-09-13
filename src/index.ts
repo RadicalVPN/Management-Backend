@@ -4,6 +4,7 @@ import expressSession from "express-session"
 import morgan from "morgan"
 import os from "os"
 import { config } from "./config"
+import { Metrics } from "./metrics"
 import { Redis } from "./modules/Redis"
 import { ConfigManager } from "./modules/server/config-manager"
 import mainRouter from "./routes/index"
@@ -62,4 +63,7 @@ import * as util from "./util"
             `Started Radical VPN Backend Server on 127.0.0.1:${config.SERVER.HTTP_PORT}`,
         )
     })
+
+    const metrics = new Metrics()
+    metrics.start()
 })()

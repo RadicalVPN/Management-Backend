@@ -1,6 +1,6 @@
+import { WireguardParser } from "../../WireguardParser"
 import { config as Config } from "../../config"
 import { db } from "../../database"
-import { exec } from "../../util"
 import { ConfigManager } from "../server/config-manager"
 
 export interface VPNdata {
@@ -68,40 +68,10 @@ export class VPN {
     }
 
     async parseCliData() {
-        const wireguardStatus = await exec("wg show wg0 dump")
+        const wireguardStatus = await WireguardParser.getStats()
 
-        return wireguardStatus
-            .trim()
-            .split("\n")
-            .slice(1)
-            .map(this.parseVpnStatusLine)
-            .filter((vpn) => vpn.publicKey === this.data.pub)[0]
-    }
-
-    private parseVpnStatusLine(line: string) {
-        const [
-            publicKey,
-            preSharedKey,
-            endpoint,
-            allowedIps,
-            latestHandshakeAt,
-            transferRx,
-            transferTx,
-            persistentKeepalive,
-        ] = line.split("\t")
-
-        return {
-            publicKey,
-            preSharedKey,
-            endpoint,
-            allowedIps: allowedIps.split(","),
-            latestHandshakeAt:
-                latestHandshakeAt === "0"
-                    ? null
-                    : new Date(`${parseInt(latestHandshakeAt)}000`),
-            transferRx: parseInt(transferRx),
-            transferTx: parseInt(transferTx),
-            persistentKeepalive,
-        }
+        return wireguardStatus.filter(
+            (vpn) => vpn.publicKey === this.data.pub,
+        )[0]
     }
 }

@@ -14,6 +14,10 @@ export class VPNFactory extends User {
         return await db.table("vpns").select("*").where("active", 1)
     }
 
+    static async globalGetAllRaw() {
+        return await db.table("vpns").select("*")
+    }
+
     async getAll() {
         const data = await db
             .table("vpns")
