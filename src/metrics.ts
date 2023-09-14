@@ -8,7 +8,7 @@ interface IVPNStat {
 }
 
 interface IRawVPNHashMap {
-    [userId: string]: IVPNStat[]
+    [userId: string]: IVPNStat
 }
 
 export class Metrics {
@@ -41,13 +41,20 @@ export class Metrics {
         }, {})
     }
 
+    private async getPrometheusMetrics() {
+        const hashmap = await this.getUserVpnHashMap()
+
+        return Object.keys(hashmap).reduce((acc, cur) => {
+            acc += `wireguard_rx{userId="${cur}"} ${hashmap[cur].rx}\n`
+            acc += `wireguard_tx{userId="${cur}"} ${hashmap[cur].tx}\n`
+
+            return acc
+        }, "")
+    }
+
     private registerRoutes() {
         this.app.get("/metrics", async (req, res, next) => {
-            const hashmap = await this.getUserVpnHashMap()
-
-            console.log(hashmap)
-
-            res.send("metrics works")
+            res.send(await this.getPrometheusMetrics())
         })
     }
 
