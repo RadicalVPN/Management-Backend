@@ -1,4 +1,5 @@
 import { Router } from "express"
+import { Metrics } from "../../metrics"
 import { QRCodeGeneartor } from "../../modules/QRCodeGenerator"
 import { VPNFactory } from "../../modules/vpn/vpn-factory"
 import { JSONSchemaValidator } from "../../schema-validator"
@@ -74,4 +75,40 @@ export default Router({ mergeParams: true })
         if (!vpn) return res.status(404).send()
 
         res.send(vpn.generateClientConfig())
+    })
+    .get("/prometheus/metrics", async (req, res, next) => {
+        const start = Date.now() / 1000 - 30 * 60 // 30 minutes
+        const end = Date.now() / 1000 // now
+
+        //down
+        const txMetrics = await Metrics.getMetricsFromPrometheus(
+            `irate(wireguard_tx{userId="${req.session.userInfo?.id}"}[1m])`,
+            start,
+            end,
+        )
+
+        //up
+        const rxMetrics = await Metrics.getMetricsFromPrometheus(
+            `irate(wireguard_rx{userId="${req.session.userInfo?.id}"}[1m])`,
+            start,
+            end,
+        )
+
+        res.send({
+            labels: txMetrics.map((metric: any) => metric.label),
+            datasets: [
+                {
+                    label: "Traffic Down",
+                    data: txMetrics.map((metric: any) => metric.value),
+                    borderWidth: 2.5,
+                    fill: true,
+                },
+                {
+                    label: "Traffic Up",
+                    data: rxMetrics.map((metric: any) => metric.value),
+                    borderWidth: 2.5,
+                    fill: true,
+                },
+            ],
+        })
     })

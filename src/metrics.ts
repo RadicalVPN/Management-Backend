@@ -1,4 +1,6 @@
+import axios from "axios"
 import express, { Express } from "express"
+import morgan from "morgan"
 import { WireguardParser } from "./WireguardParser"
 import { VPNFactory } from "./modules/vpn/vpn-factory"
 
@@ -16,6 +18,7 @@ export class Metrics {
 
     constructor() {
         this.app = express()
+        this.registerMiddlewares()
         this.registerRoutes()
     }
 
@@ -52,6 +55,10 @@ export class Metrics {
         }, "")
     }
 
+    private registerMiddlewares() {
+        this.app.use(morgan("dev"))
+    }
+
     private registerRoutes() {
         this.app.get("/metrics", async (req, res, next) => {
             res.send(await this.getPrometheusMetrics())
@@ -60,5 +67,33 @@ export class Metrics {
 
     start() {
         this.app.listen(8081)
+    }
+
+    static async getMetricsFromPrometheus(
+        query: string,
+        start: number,
+        end: number,
+    ) {
+        const data = (
+            await axios.get("http://localhost:9090/api/v1/query_range", {
+                params: {
+                    query,
+                    start,
+                    end,
+                    step: 15,
+                },
+            })
+        ).data
+
+        if (data.data.result.length === 0) {
+            return []
+        }
+
+        return data.data.result[0].values.map((point: any) => {
+            return {
+                label: new Date(point[0] * 1000).toLocaleTimeString("de-DE"),
+                value: Number(point[1]),
+            }
+        })
     }
 }
