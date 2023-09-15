@@ -99,15 +99,13 @@ export default Router({ mergeParams: true })
             datasets: [
                 {
                     label: "Traffic Down",
+                    backgroundColor: "primary",
                     data: txMetrics.map((metric: any) => metric.value),
-                    borderWidth: 2.5,
-                    fill: true,
                 },
                 {
                     label: "Traffic Up",
+                    backgroundColor: "secondary",
                     data: rxMetrics.map((metric: any) => metric.value),
-                    borderWidth: 2.5,
-                    fill: true,
                 },
             ],
         })
