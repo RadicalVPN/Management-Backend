@@ -80,7 +80,7 @@ export class Metrics {
                     query,
                     start,
                     end,
-                    step: 15,
+                    step: 10,
                 },
             })
         ).data
