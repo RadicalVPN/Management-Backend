@@ -59,7 +59,11 @@ export class VPNFactory extends User {
             .where("userId", this.userData.id)
             .where("id", id)
 
-        await ConfigManager.publishServerConfig(vpn.data.nodeId.toString())
+        //only publish if this isn't a legacy vpn
+        const nodeId = vpn.data.nodeId
+        if (nodeId) {
+            await ConfigManager.publishServerConfig(nodeId.toString())
+        }
     }
 
     async add(alias: string, node: any) {
