@@ -48,8 +48,8 @@ export class VPNFactory extends User {
     }
 
     async add(alias: string, node: any) {
-        const ipv4 = await new DHCP(DhcpIpType.V4).pop()
-        const ipv6 = await new DHCP(DhcpIpType.V6).pop()
+        const ipv4 = await new DHCP(DhcpIpType.V4, node.hostname).pop()
+        const ipv6 = await new DHCP(DhcpIpType.V6, node.hostname).pop()
         const privateKey = await exec("wg genkey")
         const publicKey = await exec(`echo ${privateKey} | wg pubkey`)
         const presharedKey = await exec("wg genpsk")

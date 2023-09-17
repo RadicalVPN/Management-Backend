@@ -11,7 +11,10 @@ export enum DhcpIpType {
 export class DHCP {
     private ipRange: IPv4CidrRange | IPv6CidrRange
 
-    constructor(readonly type: DhcpIpType) {
+    constructor(
+        readonly type: DhcpIpType,
+        readonly node: string,
+    ) {
         const ipRangeT = type === DhcpIpType.V4 ? IPv4CidrRange : IPv6CidrRange
         // @ts-ignore
         const cidrRange = config.VPN.IP_POOLS[DhcpIpType[this.type]] as string
@@ -65,6 +68,6 @@ export class DHCP {
     }
 
     private getCacheKey() {
-        return `dhcp:ips:${DhcpIpType[this.type].toLowerCase()}`
+        return `dhcp:ips:${this.node}:${DhcpIpType[this.type].toLowerCase()}`
     }
 }
