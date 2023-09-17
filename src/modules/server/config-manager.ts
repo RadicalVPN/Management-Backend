@@ -1,4 +1,3 @@
-import { config } from "../../config"
 import { Redis } from "../Redis"
 import { NodeFactory, VpnNode } from "../nodes/node-factory"
 import { VPNFactory } from "../vpn/vpn-factory"
@@ -69,7 +68,6 @@ export class ConfigManager {
             "# Server",
             "[Interface]",
             `PrivateKey = ${node.private_key}`,
-            `Address = ${config.VPN.WG_SERVER.IPS.V4}, ${config.VPN.WG_SERVER.IPS.V6}`,
             "ListenPort = 51820",
             ...clients,
         ].join("\n")
