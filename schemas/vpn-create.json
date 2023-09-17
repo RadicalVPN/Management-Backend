@@ -12,6 +12,6 @@
             "type": "number"
         }
     },
-    "required": ["alias"],
+    "required": ["alias", "node"],
     "additionalProperties": false
 }
