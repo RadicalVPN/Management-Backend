@@ -48,11 +48,18 @@ export class VPNFactory extends User {
     }
 
     async delete(id: string) {
+        const vpn = await this.get(id)
+        if (!vpn) {
+            return
+        }
+
         await db
             .table("vpns")
             .del()
             .where("userId", this.userData.id)
             .where("id", id)
+
+        await ConfigManager.publishServerConfig(vpn.data.nodeId.toString())
     }
 
     async add(alias: string, node: any) {
