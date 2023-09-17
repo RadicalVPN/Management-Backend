@@ -33,19 +33,5 @@ export const config = {
                 V6: "2001:100:100:100:100::0/112",
             },
         },
-        SECRETS: {
-            PRIVATE_KEY: parseEnviromentVariable(
-                "RADICAL_VPN_BACKEND_VPN_SECRETS_PRIVATE_KEY",
-                "4FIUiYUvXrVqiZ2C9K+GtYo6Oo2vQLgj5qX3Nmo5lUM=",
-            ),
-            PUBLIC_KEY: parseEnviromentVariable(
-                "RADICAL_VPN_BACKEND_VPN_SECRETS_PUBLIC_KEY",
-                "a4nE00KqoC5ibugA//Wi+ImOjmGFF+BCRW1V1NS0EBk=",
-            ),
-        },
-        ENDPOINT_IP: parseEnviromentVariable(
-            "RADICAL_VPN_BACKEND_VPN_ENDPOINT_IP",
-            "127.0.0.1",
-        ),
     },
 }

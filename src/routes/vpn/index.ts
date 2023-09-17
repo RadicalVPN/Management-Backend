@@ -62,7 +62,7 @@ export default Router({ mergeParams: true })
         if (!vpn) return res.status(404).send()
 
         const qr = await qrCodeGenerator.generateQrCode(
-            vpn.generateClientConfig(),
+            await vpn.generateClientConfig(),
         )
         res.contentType("png").send(qr)
     })
@@ -80,7 +80,7 @@ export default Router({ mergeParams: true })
         const vpn = await vpnFactory.get(req.params.id)
         if (!vpn) return res.status(404).send()
 
-        res.send(vpn.generateClientConfig())
+        res.send(await vpn.generateClientConfig())
     })
     .get("/prometheus/metrics", async (req, res, next) => {
         const start = Date.now() / 1000 - 30 * 60 // 30 minutes

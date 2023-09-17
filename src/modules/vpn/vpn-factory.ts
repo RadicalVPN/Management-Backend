@@ -14,6 +14,14 @@ export class VPNFactory extends User {
         return await db.table("vpns").select("*").where("active", 1)
     }
 
+    static async getForNode(node: string) {
+        return await db
+            .table("vpns")
+            .select("*")
+            .where("active", 1)
+            .where("nodeId", node)
+    }
+
     static async globalGetAllRaw() {
         return await db.table("vpns").select("*")
     }
@@ -66,6 +74,6 @@ export class VPNFactory extends User {
             nodeId: node.id,
         })
 
-        await ConfigManager.publishServerConfig(node.hostname)
+        await ConfigManager.publishServerConfig(node.id)
     }
 }
