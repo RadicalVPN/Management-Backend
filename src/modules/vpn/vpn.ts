@@ -22,7 +22,7 @@ export class VPN {
     constructor(readonly data: VPNdata) {}
 
     async generateClientConfig() {
-        const node = await new NodeFactory().get(this.data.nodeId)
+        const node = await this.getAssociatedNode()
 
         return [
             "[Interface]",
@@ -76,10 +76,16 @@ export class VPN {
     }
 
     async parseCliData() {
-        const wireguardStatus = await WireguardParser.getStats()
+        const wireguardStatus = await WireguardParser.getStats(
+            await this.getAssociatedNode(),
+        )
 
         return wireguardStatus.filter(
             (vpn) => vpn.publicKey === this.data.pub,
         )[0]
+    }
+
+    private async getAssociatedNode() {
+        return await new NodeFactory().get(this.data.nodeId)
     }
 }
