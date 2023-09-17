@@ -52,7 +52,6 @@ import * as util from "./util"
     //register main router
     app.use(mainRouter)
 
-    await ConfigManager.initConfigDir()
     await ConfigManager.publishServerConfig("all")
 
     const nodes = await new NodeFactory().getAll()

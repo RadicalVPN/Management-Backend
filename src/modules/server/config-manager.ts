@@ -1,18 +1,9 @@
-import fs from "fs/promises"
-import os from "os"
 import { config as Config } from "../../config"
-import { fileExists } from "../../util"
 import { Redis } from "../Redis"
 import { NodeFactory } from "../nodes/node-factory"
 import { VPNFactory } from "../vpn/vpn-factory"
 
 export class ConfigManager {
-    static async initConfigDir() {
-        if (!(await fileExists(Config.VPN.PATH)) && os.platform() === "linux") {
-            await fs.mkdir(Config.VPN.PATH)
-        }
-    }
-
     static async publishServerConfig(node: "global" | string) {
         const _clients = await VPNFactory.getFromAllUsers()
         const clients = _clients.reduce(

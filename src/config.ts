@@ -23,7 +23,6 @@ export const config = {
         ),
     },
     VPN: {
-        PATH: "/etc/wireguard",
         IP_POOLS: {
             V4: "10.0.0.2/16",
             V6: "2001:100:100:100::100:1/112",
