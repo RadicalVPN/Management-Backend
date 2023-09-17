@@ -76,7 +76,6 @@ export default Router({ mergeParams: true })
         res.status(200).send()
     })
     .delete("", (req, res, next) => {
-        console.log(req.session)
         if (!req.session?.authed) {
             return res.status(401).send()
         }
