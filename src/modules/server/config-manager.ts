@@ -27,7 +27,7 @@ export class ConfigManager {
             const vpnNode = await new NodeFactory().get(parseInt(node))
 
             const clientsRecieved = await redis.publish(
-                `publish_config:${vpnNode}`,
+                `publish_config:${vpnNode.hostname}`,
                 await this.computeServerConfig(
                     await this.computeClients(vpnNode),
                     vpnNode,
