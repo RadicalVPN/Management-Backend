@@ -1,6 +1,7 @@
 import { Router } from "express"
 import { Metrics } from "../../metrics"
 import { QRCodeGeneartor } from "../../modules/QRCodeGenerator"
+import { NodeFactory } from "../../modules/nodes/node-factory"
 import { VPNFactory } from "../../modules/vpn/vpn-factory"
 import { JSONSchemaValidator } from "../../schema-validator"
 
@@ -28,7 +29,12 @@ export default Router({ mergeParams: true })
             return res.status(400).send(errors)
         }
 
-        await vpnFactory.add(data.alias)
+        const node = await new NodeFactory().get(data.node)
+        if (!node) {
+            return res.status(400).send("invalid vpn node id")
+        }
+
+        await vpnFactory.add(data.alias, node)
 
         res.send()
     })

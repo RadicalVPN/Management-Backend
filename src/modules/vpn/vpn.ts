@@ -1,6 +1,7 @@
 import { WireguardParser } from "../../WireguardParser"
 import { config as Config } from "../../config"
 import { db } from "../../database"
+import { NodeFactory } from "../nodes/node-factory"
 import { ConfigManager } from "../server/config-manager"
 
 export interface VPNdata {
@@ -15,6 +16,7 @@ export interface VPNdata {
     active: number
     createdAt: string
     updatedAt: string
+    nodeId: number
 }
 
 export class VPN {
@@ -64,7 +66,12 @@ export class VPN {
             .where("id", this.data.id)
             .where("userId", this.data.userId)
 
-        await ConfigManager.publishServerConfig()
+        const node = await new NodeFactory().get(this.data.nodeId)
+        if (!node) {
+            return console.error(`vpn node ${this.data.nodeId} is invalid.`)
+        }
+
+        await ConfigManager.publishServerConfig(node.hostname)
     }
 
     async parseCliData() {

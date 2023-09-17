@@ -2,10 +2,10 @@ import RedisStore from "connect-redis"
 import express from "express"
 import expressSession from "express-session"
 import morgan from "morgan"
-import os from "os"
 import { config } from "./config"
 import { Metrics } from "./metrics"
 import { Redis } from "./modules/Redis"
+import { NodeFactory } from "./modules/nodes/node-factory"
 import { ConfigManager } from "./modules/server/config-manager"
 import mainRouter from "./routes/index"
 import * as util from "./util"
@@ -19,10 +19,11 @@ import * as util from "./util"
     }
 
     const app = express()
+    const redis = await Redis.getInstance()
 
     // Initialize store.
     let redisStore = new RedisStore({
-        client: await Redis.getInstance(),
+        client: redis,
         prefix: "radical_vpn:session:",
     })
 
@@ -52,12 +53,17 @@ import * as util from "./util"
     app.use(mainRouter)
 
     await ConfigManager.initConfigDir()
-    await ConfigManager.publishServerConfig(false)
+    await ConfigManager.publishServerConfig("all")
 
-    if (os.platform() === "linux") {
-        await util.exec("wg-quick down wg0").catch(() => {})
-        await util.exec("wg-quick up wg0")
-    }
+    const nodes = await new NodeFactory().getAll()
+    await Promise.all(
+        nodes.map(async (_node) => {
+            const hostname = _node.hostname
+            await redis.publish(`start_interface:${hostname}`, "")
+            console.log(`starting vpn node ${hostname}`)
+        }),
+    )
+
     app.listen(config.SERVER.HTTP_PORT, () => {
         console.log(
             `Started Radical VPN Backend Server on 127.0.0.1:${config.SERVER.HTTP_PORT}`,

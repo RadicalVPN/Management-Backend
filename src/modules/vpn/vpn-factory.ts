@@ -47,7 +47,7 @@ export class VPNFactory extends User {
             .where("id", id)
     }
 
-    async add(alias: string) {
+    async add(alias: string, node: any) {
         const ipv4 = await new DHCP(DhcpIpType.V4).pop()
         const ipv6 = await new DHCP(DhcpIpType.V6).pop()
         const privateKey = await exec("wg genkey")
@@ -63,8 +63,9 @@ export class VPNFactory extends User {
             psk: presharedKey,
             userId: this.userData.id,
             active: 1,
+            nodeId: node.id,
         })
 
-        await ConfigManager.publishServerConfig()
+        await ConfigManager.publishServerConfig(node.hostname)
     }
 }

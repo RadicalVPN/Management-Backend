@@ -7,6 +7,9 @@
             "minLength": 1,
             "maxLength": 30,
             "pattern": "^[a-zA-Z1-9 ]+$"
+        },
+        "node": {
+            "type": "number"
         }
     },
     "required": ["alias"],

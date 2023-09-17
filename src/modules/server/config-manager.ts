@@ -1,8 +1,9 @@
 import fs from "fs/promises"
 import os from "os"
-import path from "path"
 import { config as Config } from "../../config"
-import { exec, fileExists } from "../../util"
+import { fileExists } from "../../util"
+import { Redis } from "../Redis"
+import { NodeFactory } from "../nodes/node-factory"
 import { VPNFactory } from "../vpn/vpn-factory"
 
 export class ConfigManager {
@@ -12,7 +13,7 @@ export class ConfigManager {
         }
     }
 
-    static async publishServerConfig(syncConfig = true) {
+    static async publishServerConfig(node: "global" | string) {
         const _clients = await VPNFactory.getFromAllUsers()
         const clients = _clients.reduce(
             (arr, client) => {
@@ -44,14 +45,28 @@ export class ConfigManager {
             ...clients,
         ].join("\n")
 
-        if (os.platform() === "linux") {
-            await fs.writeFile(path.join(Config.VPN.PATH, "wg0.conf"), config, {
-                mode: 0o600,
-            })
-        }
-        if (syncConfig && os.platform() === "linux") {
-            console.log("syncing wireguard config..")
-            await exec("wg syncconf wg0 <(wg-quick strip wg0)")
+        const redis = await Redis.getInstance()
+        if (node === "all") {
+            const nodes = await new NodeFactory().getAll()
+            await Promise.all(
+                nodes.map(async (_node) => {
+                    const clientsRecieved = await redis.publish(
+                        `publish_config:${_node.hostname}`,
+                        config,
+                    )
+                    if (clientsRecieved === 0) {
+                        console.log(`vpn node ${_node.hostname} is offline.`)
+                    }
+                }),
+            )
+        } else {
+            const clientsRecieved = await redis.publish(
+                `publish_config:${node}`,
+                config,
+            )
+            if (clientsRecieved === 0) {
+                console.log(`vpn node ${node} is offline.`)
+            }
         }
     }
 }
