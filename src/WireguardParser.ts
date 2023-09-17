@@ -17,10 +17,10 @@ export class WireguardParser {
                 .map((stats) => this.parseRawStats(stats))
                 .reduce(
                     (arr, item) => {
-                        arr.push(item)
+                        arr.push(...item)
                         return arr
                     },
-                    [] as ReturnType<typeof this.parseRawStats>[],
+                    [] as ReturnType<typeof this.parseRawStats>,
                 )
 
             console.log(data)
