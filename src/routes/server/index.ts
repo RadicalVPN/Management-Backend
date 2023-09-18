@@ -7,7 +7,8 @@ export default Router({ mergeParams: true }).get("/", async (req, res) => {
     res.send(
         nodes.map((node) => {
             return {
-                hostname: node.hostname,
+                id: node.id,
+                name: node.hostname,
                 country: node.country,
                 city: node.city,
             }
