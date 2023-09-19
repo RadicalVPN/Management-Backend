@@ -91,7 +91,7 @@ export class Metrics {
 
         return data.data.result[0].values.map((point: any) => {
             return {
-                label: new Date(point[0] * 1000).toLocaleTimeString("de-DE"),
+                label: new Date(point[0] * 1000),
                 value: Number(point[1]),
             }
         })
