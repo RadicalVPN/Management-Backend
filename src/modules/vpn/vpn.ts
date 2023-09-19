@@ -48,6 +48,7 @@ export class VPN {
             alias: this.data.alias,
             createdAt: this.data.createdAt,
             updatedAt: this.data.updatedAt,
+            node: this.data.nodeId,
             status: {
                 allowedIps: status?.allowedIps || [],
                 latestHandshakeAt: status?.latestHandshakeAt || "N/A",
