@@ -16,10 +16,10 @@ export class JSONSchemaValidator {
 
     private async setup() {
         if (Object.keys(JSONSchemaValidator.ajv.schemas).length < 2) {
-            await this.loadSchemas()
-
             //load ajv formats
             ajvFormats(JSONSchemaValidator.ajv)
+
+            await this.loadSchemas()
         }
 
         return this
