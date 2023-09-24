@@ -15,7 +15,9 @@ export class UserFactory {
             (await this.findUserByEmail(email)) ||
             (await this.findUserByName(username))
         ) {
-            throw new UserCreationError(`User ${username} already exists`)
+            throw new UserCreationError(
+                `Either the email or the username is already in use`,
+            )
         }
 
         const salt = crypto.randomBytes(64)
