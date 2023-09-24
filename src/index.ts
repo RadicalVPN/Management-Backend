@@ -8,6 +8,7 @@ import { Redis } from "./modules/Redis"
 import { NodeFactory } from "./modules/nodes/node-factory"
 import { ConfigManager } from "./modules/server/config-manager"
 import mainRouter from "./routes/index"
+import { JSONSchemaValidator } from "./schema-validator"
 import * as util from "./util"
 ;(async () => {
     try {
@@ -62,6 +63,8 @@ import * as util from "./util"
             console.log(`starting vpn node ${hostname}`)
         }),
     )
+
+    await JSONSchemaValidator.setup()
 
     app.listen(config.SERVER.HTTP_PORT, () => {
         console.log(

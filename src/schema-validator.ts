@@ -8,24 +8,20 @@ export class JSONSchemaValidator {
         removeAdditional: "all",
     })
 
-    static async create() {
-        return await new JSONSchemaValidator().setup()
-    }
-
     constructor() {}
 
-    private async setup() {
-        if (Object.keys(JSONSchemaValidator.ajv.schemas).length < 2) {
-            //load ajv formats
-            ajvFormats(JSONSchemaValidator.ajv)
+    static async setup() {
+        console.log("setting up json schema validator")
 
-            await this.loadSchemas()
-        }
+        //load ajv formats
+        ajvFormats(JSONSchemaValidator.ajv)
+
+        await this.loadSchemas()
 
         return this
     }
 
-    private async loadSchemas() {
+    static async loadSchemas() {
         console.log("loading schema files")
         const schemaPath = "./schemas"
 

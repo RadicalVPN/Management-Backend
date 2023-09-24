@@ -17,7 +17,7 @@ export default Router({ mergeParams: true })
     })
     .put("", async (req, res, next) => {
         const data = req.body
-        const schema = await JSONSchemaValidator.create()
+        const schema = new JSONSchemaValidator()
         const vpnFactory = new VPNFactory(req.locals.user.userData)
 
         const errors = schema.validate(

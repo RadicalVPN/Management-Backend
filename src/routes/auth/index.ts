@@ -30,7 +30,7 @@ export default Router({ mergeParams: true })
         }
 
         const data = req.body
-        const schema = await JSONSchemaValidator.create()
+        const schema = new JSONSchemaValidator()
         const errors = schema.validate(
             "http://radicalvpn.com/schemas/login",
             data,
@@ -87,7 +87,7 @@ export default Router({ mergeParams: true })
     })
     .post("/register", async (req, res, next) => {
         const data = req.body
-        const schema = await JSONSchemaValidator.create()
+        const schema = new JSONSchemaValidator()
         const errors = schema.validate(
             "http://radicalvpn.com/schemas/register",
             data,
