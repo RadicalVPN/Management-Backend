@@ -116,3 +116,29 @@ export default Router({ mergeParams: true })
             ],
         })
     })
+    .get("/prometheus/metrics/day", async (req, res, next) => {
+        const start = Date.now() / 1000 - 24 * 60 * 60 // 24 hours
+        const end = Date.now() / 1000 // now
+
+        //down
+        const txMetrics = (
+            await Metrics.getMetricsFromPrometheus(
+                `wireguard_tx{userId="${req.session.userInfo?.id}"}`,
+                start,
+                end,
+            )
+        ).map((metric: any) => metric.value) as number[]
+
+        const rxMetrics = (
+            await Metrics.getMetricsFromPrometheus(
+                `wireguard_rx{userId="${req.session.userInfo?.id}"}`,
+                start,
+                end,
+            )
+        ).map((metric: any) => metric.value) as number[]
+
+        res.send({
+            rx: rxMetrics[rxMetrics.length - 1] - rxMetrics[0],
+            tx: txMetrics[txMetrics.length - 1] - txMetrics[0],
+        })
+    })
