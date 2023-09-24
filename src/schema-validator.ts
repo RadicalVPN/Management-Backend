@@ -32,16 +32,19 @@ export class JSONSchemaValidator {
         const files = await fs.readdir(schemaPath)
         for (const file of files) {
             const filePath = path.join(schemaPath, file)
+            const content = JSON.parse(
+                await fs.readFile(filePath, {
+                    encoding: "utf-8",
+                }),
+            )
 
             console.log(`loading json schema from ${filePath}`)
 
-            JSONSchemaValidator.ajv.addSchema(
-                JSON.parse(
-                    await fs.readFile(filePath, {
-                        encoding: "utf-8",
-                    }),
-                ),
-            )
+            if (JSONSchemaValidator.ajv.getSchema(content.$id)) {
+                continue
+            }
+
+            JSONSchemaValidator.ajv.addSchema(content)
         }
     }
 
