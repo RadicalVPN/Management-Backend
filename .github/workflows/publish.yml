@@ -1,18 +1,35 @@
-name: publish
-on: [push]
+name: Build and Push Docker Image
+
+on:
+    push:
+        branches:
+            - master
+
 jobs:
-publish-hello-docker-image:
-runs-on: ubuntu-latest
-steps:
-- uses: actions/checkout@v2
-- name: Login to GitHub Container Registry
-uses: docker/login-action@v1
-with:
-registry: ghcr.io
-username: ${{ github.actor }}
-password: ${{ secrets.GITHUB_TOKEN }}
-- name: Build the docker Docker image
-run: |
-       docker build . --tag ghcr.io/deselikem/hello-docker-gcr-demo:latest
-       docker run ghcr.io/deselikem/hello-docker-gcr-demo:latest
-       docker push ghcr.io/deselikem/hello-docker-gcr-demo:latest
+    build-and-push:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v2
+
+            - name: Set up Docker Buildx
+              run: |
+                  docker buildx create --use
+                  docker buildx inspect default --bootstrap
+              shell: bash
+
+            - name: Build Docker Image
+              run: |
+                  docker buildx build --file Dockerfile --tag ghcr.io/$GITHUB_REPOSITORY:latest .
+              shell: bash
+
+            - name: Log in to GitHub Container Registry
+              run: |
+                  echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+              shell: bash
+
+            - name: Push Docker Image to GitHub Container Registry
+              run: |
+                  docker push ghcr.io/$GITHUB_REPOSITORY:latest
+              shell: bash
