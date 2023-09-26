@@ -31,5 +31,5 @@ jobs:
 
             - name: Push Docker Image to GitHub Container Registry
               run: |
-                  docker push ghcr.io/$GITHUB_REPOSITORY:latest
+                  docker push ghcr.io/radicalvpn_backend:latest
               shell: bash
