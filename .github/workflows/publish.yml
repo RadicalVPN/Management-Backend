@@ -13,12 +13,6 @@ jobs:
             - name: Checkout code
               uses: actions/checkout@v2
 
-            - name: Set up Docker Buildx
-              run: |
-                  docker buildx create --use
-                  docker buildx inspect default --bootstrap
-              shell: bash
-
             - name: Build Docker Image
               run: |
                   docker build -t ghcr.io/radicalvpn_backend:latest .
@@ -26,7 +20,7 @@ jobs:
 
             - name: Log in to GitHub Container Registry
               run: |
-                  echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+                  echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io -u radicalvpn --password-stdin
               shell: bash
 
             - name: Push Docker Image to GitHub Container Registry
