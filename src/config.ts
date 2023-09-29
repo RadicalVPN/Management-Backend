@@ -3,8 +3,8 @@ import { readFileSync } from "fs"
 
 dotenv.config()
 
-function isDockerSecret(variable?: string) {
-    return variable?.startsWith("/run/secrets/")
+function isDockerSecret(variable?: string): boolean {
+    return variable?.startsWith("/run/secrets/") || false
 }
 
 function parseEnviromentVariable(envVariable: string, defaultValue?: string) {
@@ -14,9 +14,8 @@ function parseEnviromentVariable(envVariable: string, defaultValue?: string) {
         throw new Error(`Failed to load enviroment variable ${envVariable}`)
     }
 
-    const envData = isDockerSecret(env)
-        ? readFileSync(env?.toString() || "", "utf-8")
-        : env
+    const envData =
+        env && isDockerSecret(env) ? readFileSync(env, "utf-8") : env
     return envData || defaultValue || ""
 }
 
