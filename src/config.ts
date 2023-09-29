@@ -53,6 +53,12 @@ export const config = {
             "redis://127.0.0.1:6379",
         ),
     },
+    PROMETHEUS: {
+        HOST: parseEnviromentVariable(
+            "RADICAL_VPN_BACKEND_PROMETHEUS_HOST",
+            "localhost:9090",
+        ),
+    },
     VPN: {
         IP_POOLS: {
             V4: "10.0.0.2/16",

@@ -2,6 +2,7 @@ import axios from "axios"
 import express, { Express } from "express"
 import morgan from "morgan"
 import { WireguardParser } from "./WireguardParser"
+import { config } from "./config"
 import { VPNFactory } from "./modules/vpn/vpn-factory"
 
 interface IVPNStat {
@@ -75,14 +76,17 @@ export class Metrics {
         end: number,
     ) {
         const data = (
-            await axios.get("http://localhost:9090/api/v1/query_range", {
-                params: {
-                    query,
-                    start,
-                    end,
-                    step: 10,
+            await axios.get(
+                `http://${config.PROMETHEUS.HOST}/api/v1/query_range`,
+                {
+                    params: {
+                        query,
+                        start,
+                        end,
+                        step: 10,
+                    },
                 },
-            })
+            )
         ).data
 
         if (data.data.result.length === 0) {
