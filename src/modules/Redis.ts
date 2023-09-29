@@ -1,4 +1,5 @@
 import * as redis from "redis"
+import { config } from "../config"
 
 export class Redis {
     private static client: redis.RedisClientType<redis.RedisDefaultModules>
@@ -7,7 +8,9 @@ export class Redis {
         if (Redis.client) return Redis.client
 
         Redis.client = redis
-            .createClient()
+            .createClient({
+                url: config.REDIS.URI,
+            })
             .on("error", (err) =>
                 console.error(
                     "failed to connect to redis server:",

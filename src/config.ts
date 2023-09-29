@@ -1,6 +1,11 @@
 import * as dotenv from "dotenv"
+import { readFileSync } from "fs"
 
 dotenv.config()
+
+function isDockerSecret(variable?: string) {
+    return variable?.startsWith("/run/secrets/")
+}
 
 function parseEnviromentVariable(envVariable: string, defaultValue?: string) {
     const env = process.env[envVariable]
@@ -9,7 +14,10 @@ function parseEnviromentVariable(envVariable: string, defaultValue?: string) {
         throw new Error(`Failed to load enviroment variable ${envVariable}`)
     }
 
-    return env || defaultValue || ""
+    const envData = isDockerSecret(env)
+        ? readFileSync(env?.toString() || "", "utf-8")
+        : env
+    return envData || defaultValue || ""
 }
 
 export const config = {
@@ -20,6 +28,12 @@ export const config = {
         SESSION_SECRET: parseEnviromentVariable(
             "RADICAL_VPN_BACKEND_SESSION_SECRET",
             "insecure",
+        ),
+    },
+    REDIS: {
+        URI: parseEnviromentVariable(
+            "RADICAL_VPN_BACKEND_REDIS_URI",
+            "redis://127.0.0.1:6379",
         ),
     },
     VPN: {
