@@ -29,6 +29,24 @@ export const config = {
             "insecure",
         ),
     },
+    POSTGRES: {
+        USERNAME: parseEnviromentVariable(
+            "RADICAL_VPN_BACKEND_POSTGRES_USERNAME",
+        ),
+        PASSWORD: parseEnviromentVariable(
+            "RADICAL_VPN_BACKEND_POSTGRES_PASSWORD",
+        ),
+        HOST: parseEnviromentVariable("RADICAL_VPN_BACKEND_POSTGRES_HOST"),
+        PORT: parseInt(
+            parseEnviromentVariable(
+                "RADICAL_VPN_BACKEND_POSTGRES_PORT",
+                "5432",
+            ),
+        ),
+        DATABASE: parseEnviromentVariable(
+            "RADICAL_VPN_BACKEND_POSTGRES_DATABASE",
+        ),
+    },
     REDIS: {
         URI: parseEnviromentVariable(
             "RADICAL_VPN_BACKEND_REDIS_URI",

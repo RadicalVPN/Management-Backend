@@ -11,6 +11,11 @@ import mainRouter from "./routes/index"
 import { JSONSchemaValidator } from "./schema-validator"
 import * as util from "./util"
 ;(async () => {
+    console.log("Starting Radical VPN Backend Server..")
+
+    console.log("Starting database migration")
+    await util.exec("npx knex migrate:latest --env production")
+
     try {
         const wgVersion = (await util.exec("wg --version")).split(" ")[1]
         console.log(`Found wireguard installation -> ${wgVersion}`)

@@ -1,18 +1,14 @@
 import type { Knex } from "knex"
+import { config as serverConfig } from "./src/config"
 
-const config: { [key: string]: Knex.Config } = {
-    development: {
-        client: "sqlite3",
-        connection: {
-            filename: "./dev.sqlite3",
-        },
-    },
+export default {
     production: {
         client: "postgresql",
         connection: {
-            database: "my_db",
-            user: "username",
-            password: "password",
+            database: serverConfig.POSTGRES.DATABASE,
+            user: serverConfig.POSTGRES.USERNAME,
+            password: serverConfig.POSTGRES.PASSWORD,
+            host: serverConfig.POSTGRES.HOST,
         },
         pool: {
             min: 2,
@@ -22,6 +18,4 @@ const config: { [key: string]: Knex.Config } = {
             tableName: "knex_migrations",
         },
     },
-}
-
-module.exports = config
+} as { [key: string]: Knex.Config }
