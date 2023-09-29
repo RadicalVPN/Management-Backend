@@ -13,9 +13,9 @@ export class InternalMetrics {
     }
 
     start() {
-        this.app.get("/metrics", (req, res) => {
+        this.app.get("/metrics", async (req, res) => {
             res.set("Content-Type", this.registry.contentType)
-            res.end(this.registry.metrics())
+            res.end(await this.registry.metrics())
         })
         this.app.listen(8082)
     }
