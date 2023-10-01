@@ -23,8 +23,8 @@ function startInternalMetrics() {
         console.log("Starting database migration")
         console.log(await util.exec("npx knex migrate:latest --env production"))
 
-        startInternalMetrics()
         createForks()
+        startInternalMetrics()
 
         cluster.on("exit", (worker, code, signal) => {
             const infos = { code, signal }
