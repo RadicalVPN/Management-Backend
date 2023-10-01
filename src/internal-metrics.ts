@@ -1,22 +1,26 @@
 import express, { Express } from "express"
-import { Registry, collectDefaultMetrics } from "prom-client"
+import morgan from "morgan"
+import { AggregatorRegistry } from "prom-client"
 
 export class InternalMetrics {
-    registry: Registry
+    registry: AggregatorRegistry
     app: Express
 
     constructor() {
-        this.registry = new Registry()
+        this.registry = new AggregatorRegistry()
         this.app = express()
-
-        collectDefaultMetrics({ register: this.registry })
+        this.registerMiddlewares()
     }
 
     start() {
-        this.app.get("/metrics", async (req, res) => {
+        this.app.get("/cluster_metrics", async (req, res) => {
             res.set("Content-Type", this.registry.contentType)
-            res.end(await this.registry.metrics())
+            res.end(await this.registry.clusterMetrics())
         })
         this.app.listen(8082)
+    }
+
+    private registerMiddlewares() {
+        this.app.use(morgan("dev", {}))
     }
 }

@@ -1,5 +1,6 @@
 import cluster from "node:cluster"
 import { cpus } from "node:os"
+import { InternalMetrics } from "./internal-metrics"
 import * as util from "./util"
 
 function createForks() {
@@ -9,6 +10,12 @@ function createForks() {
     }
 }
 
+function startInternalMetrics() {
+    console.log("Starting Internal Metrics server")
+    const internalMetrics = new InternalMetrics()
+    internalMetrics.start()
+}
+
 ;(async () => {
     if (cluster.isPrimary) {
         console.log("Starting Radical VPN Backend Server - Cluster Primary")
@@ -16,6 +23,7 @@ function createForks() {
         console.log("Starting database migration")
         console.log(await util.exec("npx knex migrate:latest --env production"))
 
+        startInternalMetrics()
         createForks()
 
         cluster.on("exit", (worker, code, signal) => {
