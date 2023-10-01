@@ -1,6 +1,6 @@
 import express, { Express } from "express"
 import morgan from "morgan"
-import { AggregatorRegistry } from "prom-client"
+import { AggregatorRegistry, collectDefaultMetrics } from "prom-client"
 
 export class InternalMetrics {
     registry: AggregatorRegistry
@@ -22,5 +22,9 @@ export class InternalMetrics {
 
     private registerMiddlewares() {
         this.app.use(morgan("dev", {}))
+    }
+
+    static collectDefaultMetrics() {
+        collectDefaultMetrics()
     }
 }
