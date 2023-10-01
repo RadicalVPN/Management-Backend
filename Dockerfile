@@ -13,5 +13,5 @@ RUN apk add wireguard-tools-wg-quick
 WORKDIR /app
 COPY --from=builder ./app/build .
 COPY package.json .
-RUN npm install --production
+RUN npm install --omit=dev
 CMD [ "node", "src/index.js" ]

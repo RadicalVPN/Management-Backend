@@ -10,11 +10,16 @@ function createForks() {
     }
 }
 
-function startInternalMetrics() {
-    console.log("Starting Internal Metrics server")
-    const internalMetrics = new InternalMetrics()
-    internalMetrics.start()
+function onClusterError() {
+    cluster.on("exit", (worker, code, signal) => {
+        const infos = { code, signal }
+
+        console.log(`worker ${worker.process.pid} died ${infos}, respawning..`)
+        cluster.fork()
+    })
 }
+
+const internalMetrics = new InternalMetrics()
 
 ;(async () => {
     if (cluster.isPrimary) {
@@ -24,20 +29,13 @@ function startInternalMetrics() {
         console.log(await util.exec("npx knex migrate:latest --env production"))
 
         createForks()
-        startInternalMetrics()
-
-        cluster.on("exit", (worker, code, signal) => {
-            const infos = { code, signal }
-
-            console.log(
-                `worker ${worker.process.pid} died ${infos}, respawning..`,
-            )
-            cluster.fork()
-        })
+        internalMetrics.start()
+        onClusterError()
     } else {
         console.log(
             `Starting Radical VPN Backend Server - Cluster Worker ${process.pid}`,
         )
+
         require("./server")
     }
 })()

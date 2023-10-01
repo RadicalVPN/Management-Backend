@@ -1,5 +1,6 @@
 import express, { Express } from "express"
 import morgan from "morgan"
+import cluster from "node:cluster"
 import { AggregatorRegistry, collectDefaultMetrics } from "prom-client"
 
 export class InternalMetrics {
@@ -9,7 +10,9 @@ export class InternalMetrics {
     constructor() {
         this.registry = new AggregatorRegistry()
         this.app = express()
+
         this.registerMiddlewares()
+        this.colletDefaultMetrics()
     }
 
     start() {
@@ -24,7 +27,10 @@ export class InternalMetrics {
         this.app.use(morgan("dev", {}))
     }
 
-    static collectDefaultMetrics() {
-        collectDefaultMetrics()
+    private colletDefaultMetrics() {
+        if (cluster.isWorker) {
+            console.log("collecting default metrics")
+            collectDefaultMetrics()
+        }
     }
 }
