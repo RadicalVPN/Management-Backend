@@ -1,5 +1,7 @@
 import axios from "axios"
+import { Redis } from "./modules/Redis"
 import { NodeFactory, VpnNode } from "./modules/nodes/node-factory"
+import { md5 } from "./util"
 
 export class WireguardParser {
     static async getStats(node?: VpnNode) {
@@ -20,7 +22,26 @@ export class WireguardParser {
                     [] as ReturnType<typeof this.parseRawStats>,
                 )
         } else {
-            return this.parseRawStats(await this.getMetricsFromNode(node))
+            const stats = await this.getMetricsFromNode(node)
+            const redis = await Redis.getInstance()
+
+            const md5Hash = md5(stats)
+            const cacheData = await redis.get(md5Hash)
+            if (cacheData) {
+                return JSON.parse(cacheData) as ReturnType<
+                    typeof this.parseRawStats
+                >
+            } else {
+                await redis.set(
+                    md5Hash,
+                    JSON.stringify(this.parseRawStats(stats)),
+                    {
+                        EX: 10,
+                    },
+                )
+
+                return this.parseRawStats(await this.getMetricsFromNode(node))
+            }
         }
     }
 
