@@ -33,7 +33,7 @@ export class ConfigManager {
                 ),
             )
             if (clientsRecieved === 0) {
-                console.log(`vpn node ${vpnNode} is offline.`)
+                console.log(`vpn node ${vpnNode.hostname} is offline.`)
             }
         }
     }
