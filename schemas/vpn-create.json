@@ -9,7 +9,8 @@
             "pattern": "^[a-zA-Z1-9 ]+$"
         },
         "node": {
-            "type": "number"
+            "type": "string",
+            "format": "uuid"
         }
     },
     "required": ["alias", "node"],
