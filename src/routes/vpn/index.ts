@@ -50,7 +50,9 @@ export default Router({ mergeParams: true })
     .get("/:id", async (req, res, next) => {
         const vpnFactory = new VPNFactory(req.locals.user.userData)
         const vpn = await vpnFactory.get(req.params.id)
-        if (!vpn) return res.status(404).send()
+        if (!vpn) {
+            return res.status(404).send()
+        }
 
         res.send(await vpn.getInfo())
     })
@@ -59,7 +61,9 @@ export default Router({ mergeParams: true })
         const vpn = await vpnFactory.get(req.params.id)
         const qrCodeGenerator = new QRCodeGeneartor()
 
-        if (!vpn) return res.status(404).send()
+        if (!vpn) {
+            return res.status(404).send()
+        }
 
         const qr = await qrCodeGenerator.generateQrCode(
             await vpn.generateClientConfig(),
@@ -69,7 +73,9 @@ export default Router({ mergeParams: true })
     .post("/:id/toggle", async (req, res, next) => {
         const vpnFactory = new VPNFactory(req.locals.user.userData)
         const vpn = await vpnFactory.get(req.params.id)
-        if (!vpn) return res.status(404).send()
+        if (!vpn) {
+            return res.status(404).send()
+        }
 
         await vpn.toggle()
 
@@ -78,7 +84,9 @@ export default Router({ mergeParams: true })
     .get("/:id/config", async (req, res, next) => {
         const vpnFactory = new VPNFactory(req.locals.user.userData)
         const vpn = await vpnFactory.get(req.params.id)
-        if (!vpn) return res.status(404).send()
+        if (!vpn) {
+            return res.status(404).send()
+        }
 
         res.send(await vpn.generateClientConfig())
     })

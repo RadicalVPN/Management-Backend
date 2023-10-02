@@ -21,8 +21,12 @@ export interface VPNdata {
 export class VPN {
     constructor(readonly data: VPNdata) {}
 
-    async generateClientConfig() {
+    async generateClientConfig(): Promise<string> {
         const node = await this.getAssociatedNode()
+
+        if (!node) {
+            return ""
+        }
 
         return [
             "[Interface]",
@@ -31,11 +35,11 @@ export class VPN {
             "DNS = 1.1.1.1, 1.0.0.1",
             "",
             "[Peer]",
-            `PublicKey = ${node.public_key}`,
+            `PublicKey = ${node.data.public_key}`,
             `PresharedKey = ${this.data.psk}`,
             `AllowedIPs = 0.0.0.0/0, ::/0`,
             `PersistentKeepalive = 25`,
-            `Endpoint = ${node.external_ip}:51820`,
+            `Endpoint = ${node.data.external_ip}:51820`,
         ].join("\n")
     }
 
@@ -73,7 +77,7 @@ export class VPN {
             return console.error(`vpn node ${this.data.nodeId} is invalid.`)
         }
 
-        await ConfigManager.publishServerConfig(node.id)
+        await ConfigManager.publishServerConfig(node.data.id)
     }
 
     async parseCliData() {

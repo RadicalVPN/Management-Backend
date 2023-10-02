@@ -1,6 +1,7 @@
 import cluster from "node:cluster"
 import { cpus } from "node:os"
 import { InternalMetrics } from "./internal-metrics"
+import { NodeAvailabilityChecker } from "./modules/nodes/node-availability-check"
 import * as util from "./util"
 
 function createForks() {
@@ -31,6 +32,7 @@ const internalMetrics = new InternalMetrics()
         createForks()
         internalMetrics.start()
         onClusterError()
+        NodeAvailabilityChecker.startCheckInterval()
     } else {
         console.log(
             `Starting Radical VPN Backend Server - Cluster Worker ${process.pid}`,

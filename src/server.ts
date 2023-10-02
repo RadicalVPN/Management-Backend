@@ -60,7 +60,7 @@ import * as util from "./util"
     const nodes = await new NodeFactory().getAll()
     await Promise.all(
         nodes.map(async (_node) => {
-            const hostname = _node.hostname
+            const hostname = _node.data.hostname
             await redis.publish(`start_interface:${hostname}`, "")
             console.log(`starting vpn node ${hostname}`)
         }),

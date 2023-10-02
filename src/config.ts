@@ -70,5 +70,11 @@ export const config = {
                 V6: "2001:100:100:100:100::0/112",
             },
         },
+        NODE_AVAILABILITY_CHECK_INTERVAL_SEC: parseInt(
+            parseEnviromentVariable(
+                "NODE_AVAILABILITY_CHECK_INTERVAL_SEC",
+                "10",
+            ),
+        ),
     },
 }

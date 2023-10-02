@@ -1,10 +1,11 @@
 import axios from "axios"
 import { Redis } from "./modules/Redis"
-import { NodeFactory, VpnNode } from "./modules/nodes/node-factory"
+import { Node } from "./modules/nodes/node"
+import { NodeFactory } from "./modules/nodes/node-factory"
 import { md5 } from "./util"
 
 export class WireguardParser {
-    static async getStats(node?: VpnNode) {
+    static async getStats(node?: Node) {
         //ask every vpn node, used in metrics
         if (!node) {
             const nodes = await new NodeFactory().getAll()
@@ -45,8 +46,8 @@ export class WireguardParser {
         }
     }
 
-    private static async getMetricsFromNode(node: VpnNode) {
-        return (await axios.get(`http://${node.internal_ip}:8080/metrics`))
+    private static async getMetricsFromNode(node: Node) {
+        return (await axios.get(`http://${node.data.internal_ip}:8080/metrics`))
             .data as string
     }
 

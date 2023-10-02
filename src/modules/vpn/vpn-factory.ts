@@ -1,7 +1,7 @@
 import { db } from "../../database"
 import { exec } from "../../util"
 import { DHCP, DhcpIpType } from "../DHCP"
-import { VpnNode } from "../nodes/node-factory"
+import { Node } from "../nodes/node"
 import { ConfigManager } from "../server/config-manager"
 import { User, UserData } from "../user/user"
 import { VPN } from "./vpn"
@@ -67,9 +67,9 @@ export class VPNFactory extends User {
         }
     }
 
-    async add(alias: string, node: VpnNode) {
-        const ipv4 = await new DHCP(DhcpIpType.V4, node.hostname).pop()
-        const ipv6 = await new DHCP(DhcpIpType.V6, node.hostname).pop()
+    async add(alias: string, node: Node) {
+        const ipv4 = await new DHCP(DhcpIpType.V4, node.data.hostname).pop()
+        const ipv6 = await new DHCP(DhcpIpType.V6, node.data.hostname).pop()
         const privateKey = await exec("wg genkey")
         const publicKey = await exec(`echo ${privateKey} | wg pubkey`)
         const presharedKey = await exec("wg genpsk")
@@ -83,9 +83,9 @@ export class VPNFactory extends User {
             psk: presharedKey,
             userId: this.userData.id,
             active: 1,
-            nodeId: node.id,
+            nodeId: node.data.id,
         })
 
-        await ConfigManager.publishServerConfig(node.id)
+        await ConfigManager.publishServerConfig(node.data.id)
     }
 }
