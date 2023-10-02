@@ -15,7 +15,7 @@ export interface VPNdata {
     active: number
     createdAt: string
     updatedAt: string
-    nodeId: number
+    nodeId: string
 }
 
 export class VPN {
