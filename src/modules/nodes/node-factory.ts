@@ -16,7 +16,7 @@ export class NodeFactory {
         return await db.table("nodes").select("*")
     }
 
-    async get(id: number): Promise<VpnNode> {
+    async get(id: string): Promise<VpnNode> {
         return (await db.table("nodes").select("*").where("id", id))?.[0]
     }
 }

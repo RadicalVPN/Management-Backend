@@ -23,7 +23,7 @@ export class ConfigManager {
                 }),
             )
         } else {
-            const vpnNode = await new NodeFactory().get(parseInt(node))
+            const vpnNode = await new NodeFactory().get(node)
 
             const clientsRecieved = await redis.publish(
                 `publish_config:${vpnNode.hostname}`,

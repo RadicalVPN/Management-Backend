@@ -1,6 +1,7 @@
 import { db } from "../../database"
 import { exec } from "../../util"
 import { DHCP, DhcpIpType } from "../DHCP"
+import { VpnNode } from "../nodes/node-factory"
 import { ConfigManager } from "../server/config-manager"
 import { User, UserData } from "../user/user"
 import { VPN } from "./vpn"
@@ -66,7 +67,7 @@ export class VPNFactory extends User {
         }
     }
 
-    async add(alias: string, node: any) {
+    async add(alias: string, node: VpnNode) {
         const ipv4 = await new DHCP(DhcpIpType.V4, node.hostname).pop()
         const ipv6 = await new DHCP(DhcpIpType.V6, node.hostname).pop()
         const privateKey = await exec("wg genkey")
