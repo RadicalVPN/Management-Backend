@@ -138,7 +138,7 @@ export default Router({ mergeParams: true })
         ).map((metric: any) => metric.value) as number[]
 
         res.send({
-            rx: rxMetrics[rxMetrics.length - 1] - rxMetrics[0],
-            tx: txMetrics[txMetrics.length - 1] - txMetrics[0],
+            rx: rxMetrics[rxMetrics.length - 1] - rxMetrics[0] || 0,
+            tx: txMetrics[txMetrics.length - 1] - txMetrics[0] || 0,
         })
     })
