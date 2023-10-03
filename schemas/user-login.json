@@ -4,7 +4,8 @@
     "properties": {
         "email": { "type": "string", "format": "email" },
         "password": { "type": "string", "minLength": 8 },
-        "totpToken": { "type": "string" }
+        "totpToken": { "type": "string" },
+        "rememberMe": { "type": "boolean" }
     },
     "required": ["email", "password"],
     "additionalProperties": false

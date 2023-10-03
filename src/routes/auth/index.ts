@@ -65,6 +65,18 @@ export default Router({ mergeParams: true })
 
         //..now we got our valid user object
 
+        //regenerate current session if rememberMe is set
+        if (data.rememberMe === true) {
+            req.session.regenerate((err) => {
+                if (err) {
+                    console.error(err)
+                    return res.status(500).send("internal server error")
+                }
+
+                req.session.cookie.maxAge = 30 * 24 * 60 * 60 * 1000 //30 days
+            })
+        }
+
         req.session.authed = true
         req.session.userInfo = {
             active: realUser.userData.active == 1,
