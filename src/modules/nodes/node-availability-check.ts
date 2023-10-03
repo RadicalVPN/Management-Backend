@@ -8,11 +8,7 @@ export class NodeAvailabilityChecker {
         this.startPongListener()
 
         setInterval(async () => {
-            const nodes = await new NodeFactory().getAll()
-
-            for (const node of nodes) {
-                await this.sendPingEvent(node)
-            }
+            await this.sendPingEvents()
         }, 1000 * config.VPN.NODE_AVAILABILITY_CHECK_INTERVAL_SEC)
     }
 
@@ -39,12 +35,21 @@ export class NodeAvailabilityChecker {
         })
     }
 
-    private static async sendPingEvent(node: Node) {
+    private static async sendPingEvents() {
+        const nodes = await new NodeFactory().getAll()
         const redis = await Redis.getInstance()
+        const channels = nodes.map((node) => `pong:${node.data.hostname}`)
 
-        console.log(`sending ping to node ${node.data.hostname}`)
+        const luaScript = `
+            for i, channel in ipairs(KEYS) do
+                redis.call("PUBLISH", channel, ARGV[i])
+            end
+        `
 
-        await redis.publish(`ping:${node.data.hostname}`, "")
+        await redis.eval(luaScript, {
+            keys: channels,
+            arguments: channels.map(() => ""),
+        })
     }
 
     static async isNodeActive(node: Node) {
