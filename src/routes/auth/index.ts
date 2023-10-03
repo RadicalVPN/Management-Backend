@@ -1,5 +1,6 @@
 import { Router } from "express"
 import totp from "totp-generator"
+import { Session } from "../../modules/session"
 import { User } from "../../modules/user/user"
 import { UserCreationError, UserFactory } from "../../modules/user/user-factory"
 import { JSONSchemaValidator } from "../../schema-validator"
@@ -65,16 +66,9 @@ export default Router({ mergeParams: true })
 
         //..now we got our valid user object
 
-        //regenerate current session if rememberMe is set
         if (data.rememberMe === true) {
-            req.session.regenerate((err) => {
-                if (err) {
-                    console.error(err)
-                    return res.status(500).send("internal server error")
-                }
-
-                req.session.cookie.maxAge = 30 * 24 * 60 * 60 * 1000 //30 days
-            })
+            // set session to 30 days
+            await new Session().regenerate(30 * 24 * 60 * 60 * 1000, req)
         }
 
         req.session.authed = true
