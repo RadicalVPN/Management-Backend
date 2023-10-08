@@ -22,7 +22,7 @@ function parseEnviromentVariable(envVariable: string, defaultValue?: string) {
 export const config = {
     SERVER: {
         HTTP_PORT: parseInt(
-            parseEnviromentVariable("RADICAL_VPN_BACKEND_HTTP_PORT", "8080"),
+            parseEnviromentVariable("RADICAL_VPN_BACKEND_HTTP_PORT", "80"),
         ),
         SESSION_SECRET: parseEnviromentVariable(
             "RADICAL_VPN_BACKEND_SESSION_SECRET",

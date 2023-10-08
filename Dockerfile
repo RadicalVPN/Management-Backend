@@ -15,3 +15,4 @@ COPY --from=builder ./app/build .
 COPY package.json .
 RUN npm install --omit=dev
 CMD [ "node", "src/index.js" ]
+EXPOSE 80
