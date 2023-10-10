@@ -8,6 +8,7 @@
         "build": "npx tsc && npm run copyBuildFolders",
         "copyBuildFolders": "cp -r ./schemas ./build/schemas",
         "format": "npx prettier . --write",
+        "format:check": "npx prettier . --check",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "author": "Johann",
