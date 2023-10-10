@@ -27,7 +27,6 @@ export class Node {
             internal_ip: this.data.internal_ip,
             external_ip: this.data.external_ip,
             public_key: this.data.public_key,
-            private_key: this.data.private_key,
             online: await NodeAvailabilityChecker.isNodeActive(this),
         }
     }
