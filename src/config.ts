@@ -62,7 +62,7 @@ export const config = {
     VPN: {
         IP_POOLS: {
             V4: "10.0.0.2/16",
-            V6: "fd8f:a1fb:a69e::/64",
+            V6: "fd8f:a1fb:a69e::1/112",
         },
         NODE_AVAILABILITY_CHECK_INTERVAL_SEC: parseInt(
             parseEnviromentVariable(
