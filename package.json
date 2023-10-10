@@ -14,7 +14,7 @@
     "author": "Johann",
     "license": "ISC",
     "devDependencies": {
-        "@types/express": "^4.17.17",
+        "@types/express": "^4.17.19",
         "@types/express-session": "^1.17.7",
         "@types/morgan": "^1.9.5",
         "@types/node": "^20.5.7",
