@@ -64,10 +64,6 @@ export const config = {
             V4: "10.0.0.2/16",
             V6: "fd8f:a1fb:a69e::2/112",
         },
-        VPN_INTERFACE_IPS: {
-            V4: "10.0.0.1/16",
-            V6: "fd8f:a1fb:a69e::1/112",
-        },
         NODE_AVAILABILITY_CHECK_INTERVAL_SEC: parseInt(
             parseEnviromentVariable(
                 "NODE_AVAILABILITY_CHECK_INTERVAL_SEC",

@@ -1,4 +1,3 @@
-import { config } from "../../config"
 import { Redis } from "../Redis"
 import { Node } from "../nodes/node"
 import { NodeFactory } from "../nodes/node-factory"
@@ -72,7 +71,6 @@ export class ConfigManager {
             "",
             "# Server",
             "[Interface]",
-            `Address = ${config.VPN.VPN_INTERFACE_IPS.V4}, ${config.VPN.VPN_INTERFACE_IPS.V6}`,
             `PrivateKey = ${node.data.private_key}`,
             "ListenPort = 51820",
             ...clients,
