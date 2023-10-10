@@ -62,7 +62,11 @@ export class Metrics {
 
     private registerRoutes() {
         this.app.get("/metrics", async (req, res, next) => {
-            res.send(await this.getPrometheusMetrics())
+            try {
+                res.send(await this.getPrometheusMetrics())
+            } catch {
+                res.status(500).send("Internal Server Error")
+            }
         })
     }
 
