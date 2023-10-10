@@ -38,7 +38,7 @@ export class NodeAvailabilityChecker {
     private static async sendPingEvents() {
         const nodes = await new NodeFactory().getAll()
         const redis = await Redis.getInstance()
-        const channels = nodes.map((node) => `pong:${node.data.hostname}`)
+        const channels = nodes.map((node) => `ping:${node.data.hostname}`)
 
         const luaScript = `
             for i, channel in ipairs(KEYS) do
