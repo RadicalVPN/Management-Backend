@@ -1,84 +1,22 @@
-import axios from "axios"
 import { Redis } from "./modules/Redis"
-import { Node } from "./modules/nodes/node"
-import { NodeFactory } from "./modules/nodes/node-factory"
-import { md5 } from "./util"
 
 export class WireguardParser {
-    static async getStats(node?: Node) {
+    static async getStats() {
         //ask every vpn node, used in metrics
-        if (!node) {
-            const nodes = await new NodeFactory().getAll()
-            const rawMetrics = await Promise.all(
-                nodes.map(async (node) => await this.getMetricsFromNode(node)),
-            )
+        const redis = await Redis.getInstance()
 
-            return rawMetrics
-                .map((stats) => this.parseRawStats(stats))
-                .reduce(
-                    (arr, item) => {
-                        arr.push(...item)
-                        return arr
-                    },
-                    [] as ReturnType<typeof this.parseRawStats>,
-                )
-        } else {
-            const stats = await this.getMetricsFromNode(node)
-            const redis = await Redis.getInstance()
+        let vpnStats = []
+        for await (const key of redis.scanIterator({
+            MATCH: "vpn_stats:*",
+            COUNT: 100,
+        })) {
+            const data = await redis.get(key)
 
-            const md5Hash = md5(stats)
-            const cacheData = await redis.get(md5Hash)
-            if (cacheData) {
-                return JSON.parse(cacheData) as ReturnType<
-                    typeof this.parseRawStats
-                >
-            } else {
-                await redis.set(
-                    md5Hash,
-                    JSON.stringify(this.parseRawStats(stats)),
-                    {
-                        EX: 10,
-                    },
-                )
-
-                return this.parseRawStats(await this.getMetricsFromNode(node))
+            if (data) {
+                vpnStats.push(JSON.parse(data))
             }
         }
-    }
 
-    private static async getMetricsFromNode(node: Node) {
-        return (await axios.get(`http://${node.data.internal_ip}:8080/metrics`))
-            .data as string
-    }
-
-    private static parseRawStats(rawStats: string) {
-        return rawStats.trim().split("\n").slice(1).map(this.parseVpnStatusLine)
-    }
-
-    private static parseVpnStatusLine(line: string) {
-        const [
-            publicKey,
-            preSharedKey,
-            endpoint,
-            allowedIps,
-            latestHandshakeAt,
-            transferRx,
-            transferTx,
-            persistentKeepalive,
-        ] = line.split("\t")
-
-        return {
-            publicKey,
-            preSharedKey,
-            endpoint,
-            allowedIps: allowedIps.split(","),
-            latestHandshakeAt:
-                latestHandshakeAt === "0"
-                    ? null
-                    : new Date(`${parseInt(latestHandshakeAt)}000`),
-            transferRx: parseInt(transferRx),
-            transferTx: parseInt(transferTx),
-            persistentKeepalive,
-        }
+        return vpnStats
     }
 }
