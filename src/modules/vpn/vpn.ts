@@ -1,5 +1,5 @@
-import { WireguardParser } from "../../WireguardParser"
 import { db } from "../../database"
+import { Redis } from "../Redis"
 import { NodeFactory } from "../nodes/node-factory"
 import { ConfigManager } from "../server/config-manager"
 
@@ -44,7 +44,7 @@ export class VPN {
     }
 
     async getInfo() {
-        const status = await this.parseCliData()
+        const liveData = await this.getLiveDataFromRedis()
 
         return {
             id: this.data.id,
@@ -54,13 +54,17 @@ export class VPN {
             updatedAt: this.data.updatedAt,
             node: this.data.nodeId,
             status: {
-                allowedIps: status?.allowedIps || [],
-                latestHandshakeAt: status?.latestHandshakeAt || "N/A",
+                allowedIps: liveData?.allowedIps || [],
+                latestHandshakeAt: liveData?.latestHandshakeAt || "N/A",
                 transfer: {
-                    rx: status?.transferRx || 0,
-                    tx: status?.transferTx || 0,
+                    rx: liveData?.transferRx || 0,
+                    tx: liveData?.transferTx || 0,
                 },
-                persistentKeepalive: status?.persistentKeepalive || "N/A",
+                current: {
+                    rx: liveData?.rx || 0,
+                    tx: liveData?.tx || 0,
+                },
+                persistentKeepalive: liveData?.persistentKeepalive || "N/A",
             },
         }
     }
@@ -80,14 +84,19 @@ export class VPN {
         await ConfigManager.publishServerConfig(node.data.id)
     }
 
-    async parseCliData() {
-        const wireguardStatus = await WireguardParser.getStats(
-            await this.getAssociatedNode(),
+    async getLiveDataFromRedis() {
+        const node = await this.getAssociatedNode()
+        const redis = await Redis.getInstance()
+
+        const rawData = await redis.get(
+            `vpn_stats:${node?.data.hostname}:${this.data.pub}`,
         )
 
-        return wireguardStatus.filter(
-            (vpn) => vpn.publicKey === this.data.pub,
-        )[0]
+        if (!rawData) {
+            return null
+        }
+
+        return JSON.parse(rawData)
     }
 
     private async getAssociatedNode() {
