@@ -32,7 +32,7 @@ export class VpnPublishQueue {
 
     async publish(config: string) {
         const queue =
-            VpnPublishQueue.queues.get(this.getNodeHostName()) ??
+            VpnPublishQueue.queues.get(this.getNodeHostName()) ||
             this.getNewQueue()
 
         await queue.add("publish", {
