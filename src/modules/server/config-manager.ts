@@ -1,45 +1,36 @@
-import { Redis } from "../Redis"
 import { Node } from "../nodes/node"
 import { NodeFactory } from "../nodes/node-factory"
 import { VPNFactory } from "../vpn/vpn-factory"
+import { VpnPublishQueue } from "./vpn-publish-queue"
 
 export class ConfigManager {
     static async publishServerConfig(node: "global" | string) {
-        const redis = await Redis.getInstance()
-
         if (node === "all") {
             const nodes = await new NodeFactory().getAll()
             await Promise.all(
-                nodes.map(async (_node) => {
-                    const clientsRecieved = await redis.publish(
-                        `publish_config:${_node.data.hostname}`,
-                        await this.computeServerConfig(
-                            await this.computeClients(_node),
-                            _node,
-                        ),
-                    )
-                    if (clientsRecieved === 0) {
-                        console.log(
-                            `vpn node ${_node.data.hostname} is offline.`,
-                        )
-                    }
-                }),
+                nodes.map(
+                    async (_node) => await this.writeToPublishQueue(_node),
+                ),
             )
         } else {
-            const vpnNode = await new NodeFactory().get(node)
-            if (vpnNode) {
-                const clientsRecieved = await redis.publish(
-                    `publish_config:${vpnNode.data.hostname}`,
-                    await this.computeServerConfig(
-                        await this.computeClients(vpnNode),
-                        vpnNode,
-                    ),
-                )
-                if (clientsRecieved === 0) {
-                    console.log(`vpn node ${vpnNode.data.hostname} is offline.`)
-                }
+            const _node = await new NodeFactory().get(node)
+            if (_node) {
+                await this.writeToPublishQueue(_node)
             }
         }
+    }
+
+    private static async writeToPublishQueue(node: Node) {
+        await new VpnPublishQueue(node).publish(
+            await this.computeNodeConfig(node),
+        )
+    }
+
+    private static async computeNodeConfig(node: Node) {
+        return await this.computeServerConfig(
+            await this.computeClients(node),
+            node,
+        )
     }
 
     private static async computeClients(node: Node) {
