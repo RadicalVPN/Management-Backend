@@ -10,27 +10,33 @@ export class VpnPublishQueue {
         this.node = node
     }
 
+    private getNodeHostName() {
+        return this.node.data.hostname
+    }
+
     private getNewQueue() {
         const url = new URL(config.REDIS.URI)
 
-        return new Queue(this.node.data.hostname, {
+        const queue = new Queue(this.getNodeHostName(), {
             connection: {
                 host: url.hostname,
                 port: parseInt(url.port || "6379"),
             },
             prefix: "vpn:publish",
         })
+
+        VpnPublishQueue.queues.set(this.getNodeHostName(), queue)
+
+        return queue
     }
 
     async publish(config: string) {
         const queue =
-            VpnPublishQueue.queues.get(this.node.data.hostname) ??
+            VpnPublishQueue.queues.get(this.getNodeHostName()) ??
             this.getNewQueue()
 
-        if (queue) {
-            await queue.add("publish", {
-                config: config,
-            })
-        }
+        await queue.add("publish", {
+            config: config,
+        })
     }
 }
