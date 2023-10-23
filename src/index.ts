@@ -1,5 +1,6 @@
 import cluster from "node:cluster"
 import { cpus } from "node:os"
+import { DockerProcessInspector } from "./docker-process-inspector"
 import { InternalMetrics } from "./internal-metrics"
 import { NodeAvailabilityChecker } from "./modules/nodes/node-availability-check"
 import * as util from "./util"
@@ -26,8 +27,13 @@ const internalMetrics = new InternalMetrics()
     if (cluster.isPrimary) {
         console.log("Starting Radical VPN Backend Server - Cluster Primary")
 
-        console.log("Starting database migration")
-        console.log(await util.exec("npx knex migrate:latest --env production"))
+        if (DockerProcessInspector.isDocker()) {
+            console.log("Starting database migration")
+
+            console.log(
+                await util.exec("npx knex migrate:latest --env production"),
+            )
+        }
 
         createForks()
         internalMetrics.start()
