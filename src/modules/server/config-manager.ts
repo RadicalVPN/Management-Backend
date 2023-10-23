@@ -2,6 +2,7 @@ import { Redis } from "../Redis"
 import { Node } from "../nodes/node"
 import { NodeFactory } from "../nodes/node-factory"
 import { VPNFactory } from "../vpn/vpn-factory"
+import { VpnPublishQueue } from "./vpn-publish-queue"
 
 export class ConfigManager {
     static async publishServerConfig(node: "global" | string) {
@@ -28,16 +29,22 @@ export class ConfigManager {
         } else {
             const vpnNode = await new NodeFactory().get(node)
             if (vpnNode) {
-                const clientsRecieved = await redis.publish(
-                    `publish_config:${vpnNode.data.hostname}`,
-                    await this.computeServerConfig(
-                        await this.computeClients(vpnNode),
-                        vpnNode,
-                    ),
+                const config = await this.computeServerConfig(
+                    await this.computeClients(vpnNode),
+                    vpnNode,
                 )
-                if (clientsRecieved === 0) {
-                    console.log(`vpn node ${vpnNode.data.hostname} is offline.`)
-                }
+                await new VpnPublishQueue(vpnNode).publish(config)
+
+                // const clientsRecieved = await redis.publish(
+                //     `publish_config:${vpnNode.data.hostname}`,
+                //     await this.computeServerConfig(
+                //         await this.computeClients(vpnNode),
+                //         vpnNode,
+                //     ),
+                // )
+                // if (clientsRecieved === 0) {
+                //     console.log(`vpn node ${vpnNode.data.hostname} is offline.`)
+                // }
             }
         }
     }
