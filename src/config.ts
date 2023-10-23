@@ -1,5 +1,6 @@
 import * as dotenv from "dotenv"
 import { readFileSync } from "fs"
+import { cpus } from "os"
 
 dotenv.config()
 
@@ -27,6 +28,12 @@ export const config = {
         SESSION_SECRET: parseEnviromentVariable(
             "RADICAL_VPN_BACKEND_SESSION_SECRET",
             "insecure",
+        ),
+        WORKER: parseInt(
+            parseEnviromentVariable(
+                "RADICAL_VPN_BACKEND_WORKER",
+                cpus().length.toString(),
+            ),
         ),
     },
     POSTGRES: {

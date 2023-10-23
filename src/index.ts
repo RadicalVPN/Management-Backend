@@ -1,13 +1,13 @@
 import cluster from "node:cluster"
-import { cpus } from "node:os"
+import { config } from "./config"
 import { DockerProcessInspector } from "./docker-process-inspector"
 import { InternalMetrics } from "./internal-metrics"
 import { NodeAvailabilityChecker } from "./modules/nodes/node-availability-check"
 import * as util from "./util"
 
 function createForks() {
-    const cpuCnt = cpus().length
-    for (let i = 0; i < cpuCnt; i++) {
+    const workerCount = config.SERVER.WORKER
+    for (let i = 0; i < workerCount; i++) {
         cluster.fork()
     }
 }
