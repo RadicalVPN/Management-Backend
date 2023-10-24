@@ -31,7 +31,7 @@ export class PrometheusServiceDiscovery extends GenericInternalService {
                     __meta_city: data.city,
                     __meta_hostname: data.hostname,
                     __meta_externalIp: data.external_ip,
-                    __meta_internallIp: data.internal_ip,
+                    __meta_internalIp: data.internal_ip,
                 },
             }
         })
