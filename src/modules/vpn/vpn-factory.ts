@@ -27,22 +27,32 @@ export class VPNFactory extends User {
         return await db.table("vpns").select("*")
     }
 
-    async getAll() {
-        const data = await db
+    async getAll(includeDynamic: boolean = false) {
+        const data = (await db
             .table("vpns")
             .select("*")
             .where("userId", this.userData.id)
+            .modify((queryBuilder) => {
+                if (!includeDynamic) {
+                    queryBuilder.where("dynamic", false)
+                }
+            })) as any[]
 
         return data.map((_data) => new VPN(_data))
     }
 
-    async get(id: string) {
+    async get(id: string, includeDynamic: boolean = false) {
         const data = (
             await db
                 .table("vpns")
                 .select("*")
                 .where("userId", this.userData.id)
                 .where("id", id)
+                .modify((queryBuilder) => {
+                    if (!includeDynamic) {
+                        queryBuilder.where("dynamic", false)
+                    }
+                })
         )?.[0]
 
         return data ? new VPN(data) : undefined
@@ -59,6 +69,7 @@ export class VPNFactory extends User {
             .del()
             .where("userId", this.userData.id)
             .where("id", id)
+            .where("dynamic", false)
 
         //only publish if this isn't a legacy vpn
         const nodeId = vpn.data.nodeId
@@ -67,25 +78,31 @@ export class VPNFactory extends User {
         }
     }
 
-    async add(alias: string, node: Node) {
+    async add(alias: string, node: Node, dynamic: boolean = false) {
         const ipv4 = await new DHCP(DhcpIpType.V4, node.data.hostname).pop()
         const ipv6 = await new DHCP(DhcpIpType.V6, node.data.hostname).pop()
         const privateKey = await exec("wg genkey")
         const publicKey = await exec(`echo ${privateKey} | wg pubkey`)
         const presharedKey = await exec("wg genpsk")
 
-        await db.table("vpns").insert({
-            alias,
-            ipv4,
-            ipv6,
-            pub: publicKey,
-            priv: privateKey,
-            psk: presharedKey,
-            userId: this.userData.id,
-            active: 1,
-            nodeId: node.data.id,
-        })
+        const newVpnId = await db
+            .table("vpns")
+            .insert({
+                alias,
+                ipv4,
+                ipv6,
+                pub: publicKey,
+                priv: privateKey,
+                psk: presharedKey,
+                userId: this.userData.id,
+                active: 1,
+                nodeId: node.data.id,
+                dynamic: dynamic,
+            })
+            .returning("id")
 
         await ConfigManager.publishServerConfig(node.data.id)
+
+        return newVpnId[0].id
     }
 }

@@ -16,6 +16,7 @@ export interface VPNdata {
     createdAt: string
     updatedAt: string
     nodeId: string
+    dynamic: boolean
 }
 
 export class VPN {

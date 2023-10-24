@@ -1,0 +1,12 @@
+{
+    "$id": "http://radicalvpn.com/schemas/vpn/create/dynamic",
+    "type": "object",
+    "properties": {
+        "node": {
+            "type": "string",
+            "format": "uuid"
+        }
+    },
+    "required": ["node"],
+    "additionalProperties": false
+}

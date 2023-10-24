@@ -3,6 +3,7 @@ import express from "express"
 import expressSession from "express-session"
 import morgan from "morgan"
 import { config } from "./config"
+import { PrometheusServiceDiscovery } from "./internal-services/prometheus-service-discovery"
 import { Metrics } from "./metrics"
 import { Redis } from "./modules/Redis"
 import { NodeFactory } from "./modules/nodes/node-factory"
@@ -74,7 +75,8 @@ import * as util from "./util"
         )
     })
 
-    console.log("Starting Metrics server")
-    const metrics = new Metrics()
-    metrics.start()
+    const internalServices = [new Metrics(), new PrometheusServiceDiscovery()]
+    internalServices.forEach((service) => {
+        service.start()
+    })
 })()

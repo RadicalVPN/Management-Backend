@@ -1,7 +1,7 @@
 import cluster from "node:cluster"
 import { config } from "./config"
 import { DockerProcessInspector } from "./docker-process-inspector"
-import { InternalMetrics } from "./internal-metrics"
+import { InternalMetrics } from "./internal-services/internal-metrics"
 import { NodeAvailabilityChecker } from "./modules/nodes/node-availability-check"
 import * as util from "./util"
 

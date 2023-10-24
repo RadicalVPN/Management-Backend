@@ -2,12 +2,15 @@ import express, { Express } from "express"
 import morgan from "morgan"
 import cluster from "node:cluster"
 import { AggregatorRegistry, collectDefaultMetrics } from "prom-client"
+import { GenericInternalService } from "./generic-internal-service"
 
-export class InternalMetrics {
+export class InternalMetrics extends GenericInternalService {
     registry: AggregatorRegistry
     app: Express
 
     constructor() {
+        super()
+
         this.registry = new AggregatorRegistry()
         this.app = express()
 
