@@ -90,4 +90,14 @@ export const config = {
             ),
         ),
     },
+    NODE_PROMETHEUS: {
+        NODE_EXPORTER_PORT: parseEnviromentVariable(
+            "NODE_EXPORTER_PORT",
+            "6969",
+        ),
+        PROCESS_EXPORTER_PORT: parseEnviromentVariable(
+            "PROCESS_EXPORTER_PORT",
+            "1337",
+        ),
+    },
 }
