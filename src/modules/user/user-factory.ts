@@ -10,6 +10,11 @@ export class UserFactory {
         digest: "sha512",
     }
 
+    async getAll() {
+        const data = await db.table("users").select("*")
+        return data.map((_data) => new User(_data))
+    }
+
     async add(username: string, email: string, password: string) {
         if (
             (await this.findUserByEmail(email)) ||

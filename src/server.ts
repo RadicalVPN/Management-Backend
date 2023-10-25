@@ -8,6 +8,7 @@ import { Metrics } from "./metrics"
 import { Redis } from "./modules/Redis"
 import { NodeFactory } from "./modules/nodes/node-factory"
 import { ConfigManager } from "./modules/server/config-manager"
+import { VpnGarbageCollector } from "./modules/vpn-gc"
 import mainRouter from "./routes/index"
 import { JSONSchemaValidator } from "./schema-validator"
 import * as util from "./util"
@@ -79,4 +80,6 @@ import * as util from "./util"
     internalServices.forEach((service) => {
         service.start()
     })
+
+    new VpnGarbageCollector()
 })()

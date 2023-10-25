@@ -41,6 +41,17 @@ export class VPNFactory extends User {
         return data.map((_data) => new VPN(_data))
     }
 
+    async getAllDynamic() {
+        const data = await db
+            .table("vpns")
+            .select("*")
+            .orderBy("createdAt")
+            .where("userId", this.userData.id)
+            .where("dynamic", true)
+
+        return data.map((_data) => new VPN(_data))
+    }
+
     async get(id: string, includeDynamic: boolean = false) {
         const data = (
             await db
@@ -76,6 +87,34 @@ export class VPNFactory extends User {
         if (nodeId) {
             await ConfigManager.publishServerConfig(nodeId.toString())
         }
+    }
+
+    async deleteMultipleVpns(vpns: VPN[]): Promise<number> {
+        const vpnIds = vpns.map((vpn) => vpn.data.id)
+        console.log(vpnIds)
+
+        const delCnt = await db
+            .table("vpns")
+            .del()
+            .where("userId", this.userData.id)
+            .whereIn("id", vpnIds)
+
+        const nodesToPublish = Array.from(
+            vpns.reduce((acc, vpn) => {
+                const nodeId = vpn.data.nodeId
+                if (nodeId) {
+                    acc.add(nodeId)
+                }
+
+                return acc
+            }, new Set<string>()),
+        )
+        nodesToPublish.forEach((nodeId) => {
+            //we don't need await here, because this doesn't need to be sync
+            ConfigManager.publishServerConfig(nodeId)
+        })
+
+        return delCnt
     }
 
     async add(alias: string, node: Node, dynamic: boolean = false) {

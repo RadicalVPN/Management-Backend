@@ -77,11 +77,8 @@ export const config = {
                 "10",
             ),
         ),
-        VPN_BUFFER_CNT: parseInt(
-            parseEnviromentVariable(
-                "RADICAL_VPN_BACKEND_VPN_BUFFER_CNT",
-                "1024",
-            ),
+        DYNAMIC_BUFFERED_VPNS: parseInt(
+            parseEnviromentVariable("RADICAL_VPN_BACKEND_VPN_BUFFER_CNT", "10"),
         ),
         DYNAMIC_CONNECTION_LIMIT: parseInt(
             parseEnviromentVariable(
