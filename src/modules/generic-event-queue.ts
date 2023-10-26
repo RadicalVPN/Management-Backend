@@ -58,6 +58,7 @@ export abstract class GenericEventQueue<T> {
                         name: `${this.queueName}_schedule_event`,
                         opts: {
                             delay: (lastJobDelay += this.jobDelay),
+                            removeOnComplete: 100,
                         },
                     }
                 }),
