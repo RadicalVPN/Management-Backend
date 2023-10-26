@@ -35,7 +35,9 @@ export class Metrics {
                 }
             }
 
-            const vpn = stats.find((statVpn) => statVpn.publicKey === cur.pub)
+            const vpn = stats.find(
+                (statVpn: any) => statVpn.publicKey === cur.pub,
+            )
             if (vpn?.transferRx != undefined && vpn?.transferTx != undefined) {
                 hash[cur.userId].rx += vpn.transferRx
                 hash[cur.userId].tx += vpn.transferTx
@@ -64,7 +66,8 @@ export class Metrics {
         this.app.get("/metrics", async (req, res, next) => {
             try {
                 res.send(await this.getPrometheusMetrics())
-            } catch {
+            } catch (e) {
+                console.error(e)
                 res.status(500).send("Internal Server Error")
             }
         })

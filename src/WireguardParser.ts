@@ -1,22 +1,21 @@
 import { Redis } from "./modules/Redis"
 
 export class WireguardParser {
-    static async getStats() {
+    static async getStats(): Promise<any> {
         //ask every vpn node, used in metrics
         const redis = await Redis.getInstance()
 
-        let vpnStats = []
+        let vpnStatKeys = []
         for await (const key of redis.scanIterator({
             MATCH: "vpn_stats:*",
             COUNT: 100,
         })) {
-            const data = await redis.get(key)
-
-            if (data) {
-                vpnStats.push(JSON.parse(data))
-            }
+            vpnStatKeys.push(key)
         }
 
-        return vpnStats
+        const data = await redis.json.mGet(vpnStatKeys, "$[*]")
+
+        //@ts-ignore
+        return [].concat(...data)
     }
 }

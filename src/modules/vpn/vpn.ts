@@ -66,6 +66,7 @@ export class VPN {
                     tx: liveData?.tx || 0,
                 },
                 persistentKeepalive: liveData?.persistentKeepalive || "N/A",
+                connected: liveData?.connected || false,
             },
         }
     }
@@ -89,15 +90,11 @@ export class VPN {
         const node = await this.getAssociatedNode()
         const redis = await Redis.getInstance()
 
-        const rawData = await redis.get(
-            `vpn_stats:${node?.data.hostname}:${this.data.pub}`,
-        )
-
-        if (!rawData) {
-            return null
-        }
-
-        return JSON.parse(rawData)
+        return (
+            (await redis.json.get(`vpn_stats:${node?.data.hostname}`, {
+                path: `$.['${this.data.pub}']`,
+            })) as any
+        )[0]
     }
 
     private async getAssociatedNode() {
