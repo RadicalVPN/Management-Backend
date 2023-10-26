@@ -37,6 +37,7 @@ export class VpnPublishQueue {
 
         await queue.add("publish", {
             config: config,
+            removeOnComplete: 1000,
         })
     }
 }
