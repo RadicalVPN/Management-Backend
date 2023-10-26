@@ -91,7 +91,6 @@ export class VPNFactory extends User {
 
     async deleteMultipleVpns(vpns: VPN[]): Promise<number> {
         const vpnIds = vpns.map((vpn) => vpn.data.id)
-        console.log(vpnIds)
 
         const delCnt = await db
             .table("vpns")
@@ -110,7 +109,7 @@ export class VPNFactory extends User {
             }, new Set<string>()),
         )
         nodesToPublish.forEach((nodeId) => {
-            //we don't need await here, because this doesn't need to be sync
+            //we don't need await here, because this doesn't need to be async
             ConfigManager.publishServerConfig(nodeId)
         })
 
