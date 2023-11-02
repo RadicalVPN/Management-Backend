@@ -1,15 +1,5 @@
 import { NodeAvailabilityChecker } from "./node-availability-check"
-
-export interface VpnNode {
-    id: string
-    hostname: string
-    country: string
-    city: string
-    internal_ip: string
-    external_ip: string
-    public_key: string
-    private_key: string
-}
+import { VpnNode } from "./node-factory"
 
 export class Node {
     readonly data: VpnNode
@@ -24,6 +14,10 @@ export class Node {
             hostname: this.data.hostname,
             country: this.data.country,
             city: this.data.city,
+            country_code: this.data.country_code,
+            country_name: this.data.country_name,
+            latitude: this.data.latitude,
+            longitude: this.data.longitude,
             internal_ip: this.data.internal_ip,
             external_ip: this.data.external_ip,
             public_key: this.data.public_key,
