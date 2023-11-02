@@ -5,7 +5,7 @@ import { User, UserData } from "./user"
 export class UserCreationError extends Error {}
 export class UserFactory {
     static pbkdf2Config = {
-        iterations: 600_123,
+        iterations: 210_000,
         keyLen: 64,
         digest: "sha512",
     }
