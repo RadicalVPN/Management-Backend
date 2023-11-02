@@ -14,6 +14,7 @@ export interface VpnNode {
     external_ip: string
     public_key: string
     private_key: string
+    node_location: string
 }
 
 export class NodeFactory {
@@ -38,7 +39,7 @@ export class NodeFactory {
                     "nodes.node_location",
                 )
                 .select("*")
-                .where("id", id)
+                .where("nodes.id", id)
         )?.[0]
 
         return data ? new Node(data) : undefined
