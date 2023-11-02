@@ -21,7 +21,11 @@ export class NodeFactory {
         const data = await db
             .table("nodes")
             .join("node_locations", "node_locations.id", "nodes.node_location")
-            .select("*")
+            .select(
+                "*",
+                "nodes.id as id",
+                "node_locations.id as node_location_id",
+            )
 
         console.log(data)
 
@@ -37,7 +41,11 @@ export class NodeFactory {
                     "node_locations.id",
                     "nodes.node_location",
                 )
-                .select("*")
+                .select(
+                    "*",
+                    "nodes.id as id",
+                    "node_locations.id as node_location_id",
+                )
                 .where("nodes.id", id)
         )?.[0]
 
