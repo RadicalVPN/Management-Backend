@@ -4,7 +4,6 @@ import { Node } from "./node"
 export interface VpnNode {
     id: string
     hostname: string
-    country: string
     city: string
     country_code: string
     country_name: string

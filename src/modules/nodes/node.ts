@@ -12,10 +12,9 @@ export class Node {
         return {
             id: this.data.id,
             hostname: this.data.hostname,
-            country: this.data.country,
             city: this.data.city,
-            country_code: this.data.country_code,
             country_name: this.data.country_name,
+            country: this.data.country_code,
             latitude: this.data.latitude,
             longitude: this.data.longitude,
             internal_ip: this.data.internal_ip,
