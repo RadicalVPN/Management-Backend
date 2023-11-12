@@ -5,10 +5,15 @@ import { NodeFactory } from "../../modules/nodes/node-factory"
 import { VPNFactory } from "../../modules/vpn/vpn-factory"
 import { JSONSchemaValidator } from "../../schema-validator"
 
+interface IDynamicVpnRequestPayload {
+    node: string
+    privacyFirewall: "basic" | "recommended" | "comprehensive" | "aggresive"
+}
+
 export default Router({ mergeParams: true }).put(
     "/dynamic_vpn",
     async (req, res, next) => {
-        const data = req.body
+        const data = req.body as IDynamicVpnRequestPayload
         const schema = new JSONSchemaValidator()
         const userData = req.locals.user.userData
         const vpnFactory = new VPNFactory(userData)
@@ -42,6 +47,10 @@ export default Router({ mergeParams: true }).put(
             return res.status(500).send("failed to create vpn")
         }
 
-        res.send(await newVpn.generateClientConfig())
+        res.send(
+            await newVpn.generateClientConfig(
+                config.PRIVACY_FIREWALL_IP_MAPPING[data.privacyFirewall],
+            ),
+        )
     },
 )

@@ -27,8 +27,6 @@ export class NodeFactory {
                 "node_locations.id as node_location_id",
             )
 
-        console.log(data)
-
         return data.map((_data) => new Node(_data))
     }
 

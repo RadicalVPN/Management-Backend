@@ -5,6 +5,11 @@
         "node": {
             "type": "string",
             "format": "uuid"
+        },
+        "privacyFirewall": {
+            "type": "string",
+            "enum": ["basic", "recommended", "comprehensive", "aggresive"],
+            "default": "basic"
         }
     },
     "required": ["node"],

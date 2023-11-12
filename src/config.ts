@@ -97,4 +97,10 @@ export const config = {
             "1337",
         ),
     },
+    PRIVACY_FIREWALL_IP_MAPPING: {
+        basic: "10.0.0.1",
+        recommended: "10.0.0.2",
+        comprehensive: "10.0.0.3",
+        aggresive: "10.0.0.4",
+    },
 }

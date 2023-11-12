@@ -22,7 +22,7 @@ export interface VPNdata {
 export class VPN {
     constructor(readonly data: VPNdata) {}
 
-    async generateClientConfig(): Promise<string> {
+    async generateClientConfig(dns?: string): Promise<string> {
         const node = await this.getAssociatedNode()
 
         if (!node) {
@@ -33,7 +33,7 @@ export class VPN {
             "[Interface]",
             `PrivateKey = ${this.data.priv}`,
             `Address = ${this.data.ipv4}/32, ${this.data.ipv6}/128`,
-            "DNS = 1.1.1.1, 1.0.0.1",
+            `DNS = ${dns || "1.1.1.1"}`,
             "",
             "[Peer]",
             `PublicKey = ${node.data.public_key}`,
@@ -94,7 +94,7 @@ export class VPN {
             (await redis.json.get(`vpn_stats:${node?.data.hostname}`, {
                 path: `$.['${this.data.pub}']`,
             })) as any
-        )[0]
+        )?.[0]
     }
 
     private async getAssociatedNode() {

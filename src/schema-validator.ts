@@ -6,6 +6,7 @@ import * as path from "path"
 export class JSONSchemaValidator {
     private static ajv = new Ajv({
         removeAdditional: "all",
+        useDefaults: "empty",
     })
 
     constructor() {}
