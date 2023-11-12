@@ -3,6 +3,7 @@ import { config } from "./config"
 import { DockerProcessInspector } from "./docker-process-inspector"
 import { InternalMetrics } from "./internal-services/internal-metrics"
 import { NodeAvailabilityChecker } from "./modules/nodes/node-availability-check"
+import { VpnGarbageCollector } from "./modules/vpn-gc"
 import * as util from "./util"
 
 function createForks() {
@@ -39,6 +40,7 @@ const internalMetrics = new InternalMetrics()
         internalMetrics.start()
         onClusterError()
         NodeAvailabilityChecker.startCheckInterval()
+        new VpnGarbageCollector()
     } else {
         console.log(
             `Starting Radical VPN Backend Server - Cluster Worker ${process.pid}`,
