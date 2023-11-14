@@ -98,9 +98,9 @@ export const config = {
         ),
     },
     PRIVACY_FIREWALL_IP_MAPPING: {
-        basic: "10.0.0.1",
-        recommended: "10.0.0.2",
-        comprehensive: "10.0.0.3",
-        aggresive: "10.0.0.4",
+        basic: "172.20.0.1",
+        recommended: "172.20.0.2",
+        comprehensive: "172.20.0.3",
+        aggresive: "172.20.0.4",
     },
 }
