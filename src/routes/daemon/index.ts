@@ -6,7 +6,7 @@ import { VPNFactory } from "../../modules/vpn/vpn-factory"
 import { JSONSchemaValidator } from "../../schema-validator"
 
 interface IDynamicVpnRequestPayload {
-    node: string
+    nodeLocation: string
     privacyFirewall: "basic" | "recommended" | "comprehensive" | "aggresive"
 }
 
@@ -35,10 +35,16 @@ export default Router({ mergeParams: true }).put(
             return res.status(403).send("vpn connection limit")
         }
 
-        const node = await new NodeFactory().get(data.node)
-        if (!node) {
-            return res.status(400).send("invalid vpn node id")
+        const nodes = await new NodeFactory().getAllByLocation(
+            data.nodeLocation,
+        )
+
+        if (nodes.length === 0) {
+            return res.status(404).send("no nodes available")
         }
+
+        //choose a random node
+        const node = nodes[Math.floor(Math.random() * nodes.length)]
 
         const newId = await vpnFactory.add(crypto.randomUUID(), node, true)
         const newVpn = await vpnFactory.get(newId, true)

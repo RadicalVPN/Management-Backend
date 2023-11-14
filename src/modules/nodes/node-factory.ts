@@ -30,6 +30,20 @@ export class NodeFactory {
         return data.map((_data) => new Node(_data))
     }
 
+    async getAllByLocation(location: string): Promise<Node[]> {
+        const data = await db
+            .table("nodes")
+            .join("node_locations", "node_locations.id", "nodes.node_location")
+            .select(
+                "*",
+                "nodes.id as id",
+                "node_locations.id as node_location_id",
+            )
+            .where("node_locations.id", location)
+
+        return data.map((_data) => new Node(_data))
+    }
+
     async get(id: string): Promise<Node | undefined> {
         const data = (
             await db
