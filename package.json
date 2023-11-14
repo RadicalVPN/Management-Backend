@@ -41,7 +41,7 @@
         "pg": "^8.11.3",
         "prom-client": "^14.2.0",
         "qrcode": "^1.5.3",
-        "redis": "^4.6.8",
+        "redis": "^4.6.10",
         "sqlite3": "^5.1.6",
         "totp-generator": "^0.0.14"
     }
