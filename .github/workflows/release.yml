@@ -15,7 +15,7 @@ jobs:
 
             - name: Build Docker Image
               run: |
-                  docker build -t ghcr.io/radicalvpn/radicalvpn_backend:latest .
+                  docker build -t ghcr.io/radicalvpn/radicalvpn_backend:${{ github.ref_name }} .
               shell: bash
 
             - name: Log in to GitHub Container Registry
