@@ -27,10 +27,7 @@ export class ConfigManager {
     }
 
     private static async computeNodeConfig(node: Node) {
-        return await this.computeServerConfig(
-            await this.computeClients(node),
-            node,
-        )
+        return this.computeServerConfig(await this.computeClients(node), node)
     }
 
     private static async computeClients(node: Node) {

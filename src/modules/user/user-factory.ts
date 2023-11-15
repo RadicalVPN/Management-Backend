@@ -39,7 +39,9 @@ export class UserFactory {
 
     async authenticate(email: string, password: string): Promise<boolean> {
         const user = await this.findUserByEmail(email)
-        if (!user) return false
+        if (!user) {
+            return false
+        }
 
         const hash = this.generatePbkfs2Hash(
             Buffer.from(password),
@@ -54,7 +56,9 @@ export class UserFactory {
             await db.table("users").select("*").where("email", email)
         )?.[0]
 
-        if (!userData) return
+        if (!userData) {
+            return
+        }
 
         return new User(userData)
     }
@@ -64,7 +68,9 @@ export class UserFactory {
             await db.table("users").select("*").where("username", username)
         )?.[0]
 
-        if (!userData) return
+        if (!userData) {
+            return
+        }
 
         return new User(userData)
     }

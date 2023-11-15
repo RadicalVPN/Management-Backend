@@ -4,8 +4,8 @@ import { Node } from "./node"
 import { NodeFactory } from "./node-factory"
 
 export class NodeAvailabilityChecker {
-    static startCheckInterval() {
-        this.startPongListener()
+    static async startCheckInterval() {
+        await this.startPongListener()
 
         setInterval(async () => {
             await this.sendPingEvents()

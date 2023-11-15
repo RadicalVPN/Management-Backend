@@ -5,7 +5,7 @@ export class WireguardParser {
         //ask every vpn node, used in metrics
         const redis = await Redis.getInstance()
 
-        let vpnStatKeys = []
+        const vpnStatKeys = []
         for await (const key of redis.scanIterator({
             MATCH: "vpn_stats:*",
             COUNT: 100,

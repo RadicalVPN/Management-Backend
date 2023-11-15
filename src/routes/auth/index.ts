@@ -18,7 +18,9 @@ export default Router({ mergeParams: true })
         const user = (await new UserFactory().findUserByName(
             req.session?.userInfo?.username || "",
         )) as User
-        if (!user) return res.status(500).send()
+        if (!user) {
+            return res.status(500).send()
+        }
 
         res.send({
             ...req.session.userInfo,
@@ -47,10 +49,14 @@ export default Router({ mergeParams: true })
             data.password,
         )
 
-        if (!authenticated) return res.status(401).send("invalid credentials")
+        if (!authenticated) {
+            return res.status(401).send("invalid credentials")
+        }
 
         const realUser = await userFactory.findUserByEmail(data.email)
-        if (!realUser) return res.status(404).send("user not found")
+        if (!realUser) {
+            return res.status(404).send("user not found")
+        }
 
         const totpToken = data.totpToken
         const totpRequired = await realUser.isTotpEnabled()

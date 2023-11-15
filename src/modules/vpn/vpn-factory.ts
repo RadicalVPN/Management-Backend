@@ -27,14 +27,14 @@ export class VPNFactory extends User {
         return await db.table("vpns").select("*")
     }
 
-    async getAll(includeDynamic: boolean = false) {
+    async getAll(includeDynamic = false) {
         const data = (await db
             .table("vpns")
             .select("*")
             .where("userId", this.userData.id)
-            .modify((queryBuilder) => {
+            .modify(async (queryBuilder) => {
                 if (!includeDynamic) {
-                    queryBuilder.where("dynamic", false)
+                    await queryBuilder.where("dynamic", false)
                 }
             })) as any[]
 
@@ -52,16 +52,16 @@ export class VPNFactory extends User {
         return data.map((_data) => new VPN(_data))
     }
 
-    async get(id: string, includeDynamic: boolean = false) {
+    async get(id: string, includeDynamic = false) {
         const data = (
             await db
                 .table("vpns")
                 .select("*")
                 .where("userId", this.userData.id)
                 .where("id", id)
-                .modify((queryBuilder) => {
+                .modify(async (queryBuilder) => {
                     if (!includeDynamic) {
-                        queryBuilder.where("dynamic", false)
+                        await queryBuilder.where("dynamic", false)
                     }
                 })
         )?.[0]
@@ -110,13 +110,14 @@ export class VPNFactory extends User {
         )
         nodesToPublish.forEach((nodeId) => {
             //we don't need await here, because this doesn't need to be async
+            //eslint-disable-next-line @typescript-eslint/no-floating-promises
             ConfigManager.publishServerConfig(nodeId)
         })
 
         return delCnt
     }
 
-    async add(alias: string, node: Node, dynamic: boolean = false) {
+    async add(alias: string, node: Node, dynamic = false) {
         const ipv4 = await new DHCP(DhcpIpType.V4, node.data.hostname).pop()
         const ipv6 = await new DHCP(DhcpIpType.V6, node.data.hostname).pop()
         const privateKey = await exec("wg genkey")

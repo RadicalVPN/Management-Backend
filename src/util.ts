@@ -2,7 +2,7 @@ import * as childProcess from "child_process"
 import * as crypto from "crypto"
 import * as fs from "fs/promises"
 
-export function exec(cmd: string, log: boolean = true): Promise<string> {
+export function exec(cmd: string, log = true): Promise<string> {
     return new Promise((resolve, reject) => {
         childProcess.exec(
             cmd,
@@ -10,7 +10,14 @@ export function exec(cmd: string, log: boolean = true): Promise<string> {
                 shell: "bash",
             },
             (err, out) => {
-                if (err) return reject(err)
+                if (err) {
+                    return reject(err)
+                }
+
+                if (log) {
+                    console.log(out)
+                }
+
                 return resolve(out.trim())
             },
         )
@@ -18,7 +25,7 @@ export function exec(cmd: string, log: boolean = true): Promise<string> {
 }
 
 export async function fileExists(path: string) {
-    return !!(await fs.stat(path).catch((e) => false))
+    return !!(await fs.stat(path).catch(() => false))
 }
 
 export function md5(input: string) {

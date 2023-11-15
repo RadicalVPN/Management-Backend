@@ -19,7 +19,7 @@ export class VpnGarbageCollector extends GenericEventQueue<User> {
         const vpns = await vpnFactory.getAllDynamic()
 
         if (vpns.length >= config.VPN.DYNAMIC_BUFFERED_VPNS) {
-            let vpnsToDelete: VPN[] = []
+            const vpnsToDelete: VPN[] = []
             await Promise.all(
                 vpns.map(async (_vpn) => {
                     const vpn = new VPN(_vpn.data)

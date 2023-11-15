@@ -26,13 +26,13 @@ import * as util from "./util"
     const redis = await Redis.getInstance()
 
     // Initialize store.
-    let redisStore = new RedisStore({
+    const redisStore = new RedisStore({
         client: redis,
         prefix: "radical_vpn:session:",
     })
 
     //register middlewares
-    let sessionConfig: expressSession.SessionOptions = {
+    const sessionConfig: expressSession.SessionOptions = {
         store: redisStore,
         secret: config.SERVER.SESSION_SECRET,
         name: "RADICAL_SESSION_ID",
@@ -79,4 +79,7 @@ import * as util from "./util"
     internalServices.forEach((service) => {
         service.start()
     })
-})()
+})().catch((err) => {
+    console.error("Failed to start RadicalVPN Server Worker", err)
+    process.exit(1)
+})

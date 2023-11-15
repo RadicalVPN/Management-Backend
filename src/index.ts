@@ -17,7 +17,11 @@ function onClusterError() {
     cluster.on("exit", (worker, code, signal) => {
         const infos = { code, signal }
 
-        console.log(`worker ${worker.process.pid} died ${infos}, respawning..`)
+        console.log(
+            `worker ${worker.process.pid} died ${JSON.stringify(
+                infos,
+            )}, respawning..`,
+        )
         cluster.fork()
     })
 }
@@ -39,7 +43,7 @@ const internalMetrics = new InternalMetrics()
         createForks()
         internalMetrics.start()
         onClusterError()
-        NodeAvailabilityChecker.startCheckInterval()
+        await NodeAvailabilityChecker.startCheckInterval()
         new VpnGarbageCollector()
     } else {
         console.log(
@@ -48,4 +52,7 @@ const internalMetrics = new InternalMetrics()
 
         require("./server")
     }
-})()
+})().catch((err) => {
+    console.error("Failed to start RadicalVPN Cluster", err)
+    process.exit(1)
+})

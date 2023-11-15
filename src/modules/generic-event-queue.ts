@@ -51,7 +51,7 @@ export abstract class GenericEventQueue<T> {
             const items = await this.getItems()
 
             let lastJobDelay = this.jobDelay
-            this.queue.addBulk(
+            await this.queue.addBulk(
                 items.map((item) => {
                     return {
                         data: item,

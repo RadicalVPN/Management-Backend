@@ -41,7 +41,9 @@ export default Router({ mergeParams: true })
     .delete("/:id", async (req, res, next) => {
         const vpnFactory = new VPNFactory(req.locals.user.userData)
         const vpn = await vpnFactory.get(req.params.id)
-        if (!vpn) return res.status(404).send()
+        if (!vpn) {
+            return res.status(404).send()
+        }
 
         await vpnFactory.delete(req.params.id)
 

@@ -1,0 +1,87 @@
+module.exports = {
+    extends: [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended",
+        "prettier",
+    ],
+    ignorePatterns: ["*.test.ts", "*Test*.ts"],
+    parser: "@typescript-eslint/parser",
+    plugins: ["@typescript-eslint"],
+    root: true,
+    parserOptions: {
+        tsconfigRootDir: __dirname,
+        project: "./tsconfig.json",
+    },
+    rules: {
+        "@typescript-eslint/await-thenable": "error",
+        "@typescript-eslint/ban-ts-comment": "off",
+        "@typescript-eslint/no-base-to-string": "error",
+        "@typescript-eslint/no-empty-function": [
+            "error",
+            {
+                allow: [
+                    "decoratedFunctions",
+                    "protected-constructors",
+                    "constructors",
+                ],
+            },
+        ],
+        "@typescript-eslint/no-empty-interface": [
+            "error",
+            {
+                allowSingleExtends: true,
+            },
+        ],
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/no-floating-promises": "error",
+        "@typescript-eslint/no-inferrable-types": "error",
+        "@typescript-eslint/no-loss-of-precision": "warn",
+        "@typescript-eslint/no-namespace": "error",
+        "@typescript-eslint/no-non-null-asserted-optional-chain": "error",
+        "@typescript-eslint/no-non-null-assertion": "off",
+        "@typescript-eslint/no-this-alias": "error",
+        "@typescript-eslint/no-unused-vars": [
+            "error",
+            {
+                argsIgnorePattern: "next|res|_",
+                varsIgnorePattern: "_",
+            },
+        ],
+        "@typescript-eslint/no-var-requires": "error",
+        "@typescript-eslint/prefer-includes": "warn",
+        "@typescript-eslint/prefer-optional-chain": "error",
+        "@typescript-eslint/prefer-return-this-type": "warn",
+        "@typescript-eslint/prefer-string-starts-ends-with": "warn",
+        "@typescript-eslint/require-await": "error",
+        curly: "error",
+        "no-async-promise-executor": "error",
+        "no-case-declarations": "error",
+        "no-cond-assign": "error",
+        "no-constant-condition": [
+            "error",
+            {
+                checkLoops: false,
+            },
+        ],
+        "no-duplicate-case": "error",
+        "no-empty": [
+            "error",
+            {
+                allowEmptyCatch: true,
+            },
+        ],
+        "no-empty-pattern": "error",
+        "no-extra-boolean-cast": "error",
+        "no-fallthrough": "error",
+        "no-irregular-whitespace": "error",
+        "no-self-assign": "error",
+        "no-unsafe-optional-chaining": "error",
+        "no-unused-labels": "error",
+        "no-useless-catch": "error",
+        "no-useless-escape": "error",
+        "no-var": "error",
+        "prefer-const": "warn",
+        "prefer-spread": "warn",
+        "require-await": "off",
+    },
+}

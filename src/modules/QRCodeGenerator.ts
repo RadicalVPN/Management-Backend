@@ -3,7 +3,7 @@ import * as qrcode from "qrcode"
 import { Redis } from "./Redis"
 
 export class QRCodeGeneartor {
-    constructor(readonly margin: number = 2) {}
+    constructor(readonly margin = 2) {}
 
     async generateQrCode(input: string): Promise<Buffer> {
         const redis = await Redis.getInstance()
