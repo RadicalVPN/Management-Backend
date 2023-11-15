@@ -1,0 +1,29 @@
+name: Build and Push Docker Image
+
+on:
+    push:
+        tags:
+            - "*"
+
+jobs:
+    build-and-push:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v2
+
+            - name: Build Docker Image
+              run: |
+                  docker build -t ghcr.io/radicalvpn/radicalvpn_backend:latest .
+              shell: bash
+
+            - name: Log in to GitHub Container Registry
+              run: |
+                  echo ${{ secrets.GHCR_TOKEN }} | docker login ghcr.io -u radicalvpn --password-stdin
+              shell: bash
+
+            - name: Push Docker Image to GitHub Container Registry
+              run: |
+                  docker push ghcr.io/radicalvpn/radicalvpn_backend:${{ github.ref_name }}
+              shell: bash
