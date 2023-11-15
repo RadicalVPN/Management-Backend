@@ -97,6 +97,17 @@ export class VPN {
         )?.[0]
     }
 
+    /**
+     * Deletes the private key from the database to improve security.
+     */
+    async deletePrivateKey() {
+        await db
+            .table("vpns")
+            .update({ priv: null })
+            .where("id", this.data.id)
+            .where("userId", this.data.userId)
+    }
+
     private async getAssociatedNode() {
         return await new NodeFactory().get(this.data.nodeId)
     }

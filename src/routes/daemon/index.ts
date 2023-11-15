@@ -53,10 +53,13 @@ export default Router({ mergeParams: true }).put(
             return res.status(500).send("failed to create vpn")
         }
 
-        res.send(
-            await newVpn.generateClientConfig(
-                config.PRIVACY_FIREWALL_IP_MAPPING[data.privacyFirewall],
-            ),
+        const configuration = await newVpn.generateClientConfig(
+            config.PRIVACY_FIREWALL_IP_MAPPING[data.privacyFirewall],
         )
+
+        //now we can delete the private key from the database safely
+        await newVpn.deletePrivateKey()
+
+        res.send(configuration)
     },
 )
