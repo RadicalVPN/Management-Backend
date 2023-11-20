@@ -28,17 +28,17 @@ export class Metrics {
         const vpns = await VPNFactory.globalGetAllRaw()
 
         return vpns.reduce((hash, cur) => {
-            if (!hash[cur.userId]) {
-                hash[cur.userId] = {
-                    rx: 0,
-                    tx: 0,
-                }
-            }
-
             const vpn = stats.find(
                 (statVpn: any) => statVpn.publicKey === cur.pub,
             )
             if (vpn?.transferRx != undefined && vpn?.transferTx != undefined) {
+                if (!hash[cur.userId]) {
+                    hash[cur.userId] = {
+                        rx: 0,
+                        tx: 0,
+                    }
+                }
+
                 hash[cur.userId].rx += vpn.transferRx
                 hash[cur.userId].tx += vpn.transferTx
             }
