@@ -1,6 +1,6 @@
 import { Router } from "express"
 import totp from "totp-generator"
-import { QRCodeGeneartor } from "../../modules/QRCodeGenerator"
+import { QRCodeGeneartor } from "../../modules/qr-code-generator"
 import { User } from "../../modules/user/user"
 import { UserFactory } from "../../modules/user/user-factory"
 

@@ -1,9 +1,9 @@
 import axios from "axios"
 import express, { Express } from "express"
 import morgan from "morgan"
-import { WireguardParser } from "./WireguardParser"
 import { config } from "./config"
 import { VPNFactory } from "./modules/vpn/vpn-factory"
+import { WireguardParser } from "./wireguard-parser"
 
 interface IVPNStat {
     rx: number

@@ -1,6 +1,6 @@
 import { db } from "../../database"
 import { exec } from "../../util"
-import { DHCP, DhcpIpType } from "../DHCP"
+import { DHCP, DhcpIpType } from "../dhcp"
 import { Node } from "../nodes/node"
 import { ConfigManager } from "../server/config-manager"
 import { User, UserData } from "../user/user"

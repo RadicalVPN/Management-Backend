@@ -1,6 +1,6 @@
 import crypto from "crypto"
 import { db } from "../../database"
-import { Base32 } from "../Base32"
+import { Base32 } from "../base32"
 
 export interface UserData {
     id: number

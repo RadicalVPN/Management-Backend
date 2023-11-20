@@ -1,7 +1,7 @@
 import { Router } from "express"
 import { Metrics } from "../../metrics"
-import { QRCodeGeneartor } from "../../modules/QRCodeGenerator"
 import { NodeFactory } from "../../modules/nodes/node-factory"
+import { QRCodeGeneartor } from "../../modules/qr-code-generator"
 import { VPNFactory } from "../../modules/vpn/vpn-factory"
 import { JSONSchemaValidator } from "../../schema-validator"
 
