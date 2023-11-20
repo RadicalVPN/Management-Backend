@@ -1,6 +1,6 @@
 import { db } from "../../database"
-import { Redis } from "../Redis"
 import { NodeFactory } from "../nodes/node-factory"
+import { Redis } from "../redis"
 import { ConfigManager } from "../server/config-manager"
 
 export interface VPNdata {

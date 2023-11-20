@@ -1,6 +1,6 @@
 import { createHash } from "crypto"
 import * as qrcode from "qrcode"
-import { Redis } from "./Redis"
+import { Redis } from "./redis"
 
 export class QRCodeGeneartor {
     constructor(readonly margin = 2) {}

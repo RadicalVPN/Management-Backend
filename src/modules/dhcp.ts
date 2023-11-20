@@ -1,7 +1,7 @@
 import { IPv4CidrRange, IPv6CidrRange } from "ip-num"
 import { config } from "../config"
 import { db } from "../database"
-import { Redis } from "./Redis"
+import { Redis } from "./redis"
 
 export enum DhcpIpType {
     V4,

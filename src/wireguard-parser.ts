@@ -1,4 +1,4 @@
-import { Redis } from "./modules/Redis"
+import { Redis } from "./modules/redis"
 
 export class WireguardParser {
     static async getStats(): Promise<any> {

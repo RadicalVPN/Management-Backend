@@ -1,5 +1,5 @@
 import { config } from "../../config"
-import { Redis } from "../Redis"
+import { Redis } from "../redis"
 import { Node } from "./node"
 import { NodeFactory } from "./node-factory"
 
