@@ -25,7 +25,7 @@ export default Router({ mergeParams: true })
 
         res.send({
             ...req.session.userInfo,
-            emailSha256: sha256(user.userData.email),
+            emailSha256: sha256(user.userData.email.toLowerCase()),
             totp: await user.isTotpEnabled(),
         })
     })
