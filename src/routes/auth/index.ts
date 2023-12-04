@@ -4,6 +4,7 @@ import { Session } from "../../modules/session"
 import { User } from "../../modules/user/user"
 import { UserCreationError, UserFactory } from "../../modules/user/user-factory"
 import { JSONSchemaValidator } from "../../schema-validator"
+import { sha256 } from "../../util"
 
 export default Router({ mergeParams: true })
     .get("/", async (req, res, next) => {
@@ -24,6 +25,7 @@ export default Router({ mergeParams: true })
 
         res.send({
             ...req.session.userInfo,
+            emailSha256: sha256(user.userData.email),
             totp: await user.isTotpEnabled(),
         })
     })
