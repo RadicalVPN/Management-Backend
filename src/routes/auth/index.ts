@@ -27,6 +27,7 @@ export default Router({ mergeParams: true })
             ...req.session.userInfo,
             emailSha256: sha256(user.userData.email.toLowerCase()),
             totp: await user.isTotpEnabled(),
+            registered: user.userData.createdAt,
         })
     })
     .post("/", async (req, res, next) => {
