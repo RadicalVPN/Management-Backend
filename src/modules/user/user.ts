@@ -1,6 +1,7 @@
 import crypto from "crypto"
 import { db } from "../../database"
 import { Base32 } from "../base32"
+import { UserError } from "../common/UserError"
 
 export interface UserData {
     id: number
@@ -68,5 +69,23 @@ export class User {
 
     async disableTotp() {
         await db.table("users_totp").delete().where("userId", this.userData.id)
+    }
+
+    async updateUsername(username: string) {
+        const alreadyExists = await db
+            .table("users")
+            .where("username", username)
+            .first()
+
+        if (alreadyExists !== undefined) {
+            throw new UserError("username already in use")
+        }
+
+        await db
+            .table("users")
+            .update({
+                username,
+            })
+            .where("id", this.userData.id)
     }
 }

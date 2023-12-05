@@ -4,6 +4,7 @@ import authRouter from "./auth/index"
 import daemonRouter from "./daemon/index"
 import serverRouter from "./server/index"
 import totpRouter from "./totp/index"
+import userRouter from "./user/index"
 import vpnRouter from "./vpn/index"
 
 export default Router({ mergeParams: true })
@@ -13,3 +14,4 @@ export default Router({ mergeParams: true })
     .use("/api/:version/vpn", vpnRouter)
     .use("/api/:version/auth/totp", totpRouter)
     .use("/api/:version/server", serverRouter)
+    .use("/api/:version/user", userRouter)

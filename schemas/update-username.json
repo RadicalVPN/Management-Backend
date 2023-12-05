@@ -1,0 +1,14 @@
+{
+    "$id": "http://radicalvpn.com/schemas/update_username",
+    "type": "object",
+    "properties": {
+        "username": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 20,
+            "pattern": "^[a-zA-Z]+$"
+        }
+    },
+    "required": ["username"],
+    "additionalProperties": false
+}
