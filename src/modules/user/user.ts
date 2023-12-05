@@ -65,4 +65,8 @@ export class User {
             )?.[0]?.confirmed == 1 || false
         )
     }
+
+    async disableTotp() {
+        await db.table("users_totp").delete().where("userId", this.userData.id)
+    }
 }

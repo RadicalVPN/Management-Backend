@@ -55,3 +55,29 @@ export default Router({ mergeParams: true })
 
         res.send()
     })
+    .delete("/", async (req, res, next) => {
+        const user = new User(req.locals.user.userData)
+        const password = req.body.password as string | undefined
+        const totpToken = req.body.totp as string | undefined
+        const secret = await user.getTotpSecret()
+
+        if (!password || !totpToken || !secret) {
+            return res.status(400).send()
+        }
+
+        const authed = await new UserFactory().authenticate(
+            user.userData.email,
+            password,
+        )
+        if (!authed) {
+            return res.status(401).send("invalid password")
+        }
+
+        if (totp(secret) !== totpToken) {
+            return res.status(401).send("invalid totp token")
+        }
+
+        await user.disableTotp()
+
+        res.send()
+    })
