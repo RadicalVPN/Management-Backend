@@ -10,10 +10,10 @@ import vpnRouter from "./vpn/index"
 
 export default Router({ mergeParams: true })
     .use("/api/:version/auth", authRouter)
+    .use("/api/:version/configuration", configurationRouter)
     .use(authenticate)
     .use("/api/:version/internal", daemonRouter)
     .use("/api/:version/vpn", vpnRouter)
     .use("/api/:version/auth/totp", totpRouter)
     .use("/api/:version/server", serverRouter)
     .use("/api/:version/user", userRouter)
-    .use("/api/:version/configuration", configurationRouter)
