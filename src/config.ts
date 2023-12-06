@@ -17,7 +17,7 @@ function parseEnviromentVariable(envVariable: string, defaultValue?: string) {
 
     const envData =
         env && isDockerSecret(env) ? readFileSync(env, "utf-8") : env
-    return envData || defaultValue || ""
+    return envData?.trim() ?? defaultValue?.trim() ?? ""
 }
 
 export const config = {
