@@ -103,4 +103,12 @@ export const config = {
         comprehensive: "172.20.0.3",
         aggresive: "172.20.0.4",
     },
+    ClOUDFLARE: {
+        TURNSTILE: {
+            SITE_KEY: parseEnviromentVariable("CLOUDFLARE_TURNSTILE_SITE_KEY"),
+            SECRET_KEY: parseEnviromentVariable(
+                "CLOUDFLARE_TURNSTILE_SECRET_KEY",
+            ),
+        },
+    },
 }

@@ -1,6 +1,7 @@
 import { Router } from "express"
 import { authenticate } from "../middleware/authenticate"
 import authRouter from "./auth/index"
+import configurationRouter from "./configuration/index"
 import daemonRouter from "./daemon/index"
 import serverRouter from "./server/index"
 import totpRouter from "./totp/index"
@@ -15,3 +16,4 @@ export default Router({ mergeParams: true })
     .use("/api/:version/auth/totp", totpRouter)
     .use("/api/:version/server", serverRouter)
     .use("/api/:version/user", userRouter)
+    .use("/api/:version/configuration", configurationRouter)
