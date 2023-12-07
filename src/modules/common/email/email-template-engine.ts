@@ -31,10 +31,15 @@ export class EmailTemplateEngine extends Email {
         data: TTemplateDataOptions,
     ): Promise<string | undefined> {
         console.log(process.cwd())
-        const template = await fs.readFile(
-            path.join(process.cwd(), "templates", templateName) + ".ejs",
-            "utf-8",
-        )
+        const computedPath =
+            path.join(process.cwd(), "templates", templateName) + ".ejs"
+        const expectedPath = path.join(process.cwd(), "templates")
+
+        if (!computedPath.startsWith(expectedPath)) {
+            throw new Error("invalid template path")
+        }
+
+        const template = await fs.readFile(computedPath, "utf-8")
 
         let html
         try {
