@@ -1,7 +1,7 @@
 import crypto from "crypto"
 import { db } from "../../database"
 import { Base32 } from "../base32"
-import { UserError } from "../common/UserError"
+import { UserError } from "../common/user-error"
 
 export interface UserData {
     id: number
