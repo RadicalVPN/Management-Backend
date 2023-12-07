@@ -19,6 +19,12 @@ export class CloudflareTurnstile {
 
     async verify(): Promise<boolean> {
         const challengeData = await this.fetchChallengeData()
+
+        console.log(
+            "cloudflare turnstile challenge status",
+            challengeData.success ? "SUCCESS" : "FAILED",
+        )
+
         return challengeData.success === true
     }
 
