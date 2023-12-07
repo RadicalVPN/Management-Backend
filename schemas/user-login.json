@@ -5,7 +5,8 @@
         "email": { "type": "string", "format": "email" },
         "password": { "type": "string", "minLength": 8 },
         "totpToken": { "type": "string" },
-        "rememberMe": { "type": "boolean" }
+        "rememberMe": { "type": "boolean" },
+        "turnstileChallenge": { "type": "string" }
     },
     "required": ["email", "password"],
     "additionalProperties": false

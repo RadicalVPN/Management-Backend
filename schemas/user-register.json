@@ -9,7 +9,8 @@
             "pattern": "^[a-zA-Z]+$"
         },
         "email": { "type": "string", "format": "email" },
-        "password": { "type": "string", "minLength": 8 }
+        "password": { "type": "string", "minLength": 8 },
+        "turnstileChallenge": { "type": "string" }
     },
     "required": ["username", "email", "password"],
     "additionalProperties": false

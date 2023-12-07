@@ -19,7 +19,7 @@ export class CloudflareTurnstile {
 
     async verify(): Promise<boolean> {
         const challengeData = await this.fetchChallengeData()
-        return challengeData.success
+        return challengeData.success === true
     }
 
     private async fetchChallengeData(): Promise<IChallengeData> {

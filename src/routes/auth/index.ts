@@ -1,5 +1,6 @@
 import { Router } from "express"
 import totp from "totp-generator"
+import { CloudflareTurnstile } from "../../modules/cloudfare-turnstile"
 import { Session } from "../../modules/session"
 import { User } from "../../modules/user/user"
 import { UserCreationError, UserFactory } from "../../modules/user/user-factory"
@@ -44,6 +45,11 @@ export default Router({ mergeParams: true })
 
         if (errors.valid === false) {
             return res.status(400).send(errors)
+        }
+
+        const turnstile = new CloudflareTurnstile(data.turnstileChallenge)
+        if ((await turnstile.verify()) === false) {
+            return res.status(401).send("turnstile challenge failed")
         }
 
         const userFactory = new UserFactory()
@@ -110,6 +116,11 @@ export default Router({ mergeParams: true })
 
         if (errors.valid === false) {
             return res.status(400).send(errors)
+        }
+
+        const turnstile = new CloudflareTurnstile(data.turnstileChallenge)
+        if ((await turnstile.verify()) === false) {
+            return res.status(401).send("turnstile challenge failed")
         }
 
         const userFactory = new UserFactory()
