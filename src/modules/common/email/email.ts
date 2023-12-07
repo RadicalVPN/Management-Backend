@@ -7,7 +7,7 @@ export class Email {
 
     constructor() {}
 
-    async send(
+    protected async send(
         to: string | string[],
         htmlBody: string,
         subject: string,
