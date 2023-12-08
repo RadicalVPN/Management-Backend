@@ -111,4 +111,11 @@ export const config = {
             ),
         },
     },
+    SMTP: {
+        HOST: parseEnviromentVariable("SMTP_HOST"),
+        PORT: parseInt(parseEnviromentVariable("SMTP_PORT", "465")),
+        USERNAME: parseEnviromentVariable("SMTP_USERNAME"),
+        PASSWORD: parseEnviromentVariable("SMTP_PASSWORD"),
+        FROM: parseEnviromentVariable("SMTP_FROM"),
+    },
 }

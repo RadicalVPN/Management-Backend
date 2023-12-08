@@ -1,7 +1,8 @@
-import crypto from "crypto"
+import crypto, { randomUUID } from "crypto"
 import { db } from "../../database"
 import { Base32 } from "../base32"
-import { UserError } from "../common/UserError"
+import { EmailQueueManager } from "../common/email/email-queue-manager"
+import { UserError } from "../common/user-error"
 
 export interface UserData {
     id: number
@@ -12,6 +13,7 @@ export interface UserData {
     active: number
     createdAt: string
     updatedAt: string
+    emailVerified: boolean
 }
 
 export class User {
@@ -87,5 +89,30 @@ export class User {
                 username,
             })
             .where("id", this.userData.id)
+    }
+
+    async generateVerificationCode() {
+        const verifyToken = `${randomUUID()}-${randomUUID()}
+        `
+        //remove old tokens, so when a user resends the email, the old token gets invalidated
+        await db
+            .table("users_verify")
+            .delete()
+            .where("userId", this.userData.id)
+
+        await db.table("users_verify").insert({
+            userId: this.userData.id,
+            verifyToken: verifyToken,
+        })
+
+        //send our invite email
+        await new EmailQueueManager().addJob({
+            to: this.userData.email,
+            subject: "RadicalVPN - Verify your email",
+            templateName: "email-confirmation",
+            templateData: {
+                username: this.userData.username,
+            },
+        })
     }
 }

@@ -1,5 +1,5 @@
 import { Router } from "express"
-import { UserError } from "../../modules/common/UserError"
+import { UserError } from "../../modules/common/user-error"
 import { User } from "../../modules/user/user"
 import { JSONSchemaValidator } from "../../schema-validator"
 
