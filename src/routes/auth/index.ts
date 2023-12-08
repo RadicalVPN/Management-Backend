@@ -139,5 +139,8 @@ export default Router({ mergeParams: true })
             }
         }
 
+        const user = await userFactory.findUserByEmail(data.email)
+        await user?.generateVerificationCode()
+
         res.send()
     })
