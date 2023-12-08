@@ -23,9 +23,5 @@ export async function authenticate(
         req.session.userInfo.id,
     )) as User
 
-    if (req.locals.user?.userData?.emailVerified === false) {
-        return res.status(401).send("email not verified")
-    }
-
     next()
 }

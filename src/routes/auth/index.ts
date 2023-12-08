@@ -79,6 +79,10 @@ export default Router({ mergeParams: true })
             }
         }
 
+        if (realUser.userData.emailVerified === false) {
+            return res.status(401).send("email not verified")
+        }
+
         //..now we got our valid user object
 
         if (data.rememberMe === true) {
