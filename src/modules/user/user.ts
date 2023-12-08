@@ -5,7 +5,7 @@ import { EmailQueueManager } from "../common/email/email-queue-manager"
 import { UserError } from "../common/user-error"
 
 export interface UserData {
-    id: number
+    id: string
     username: string
     email: string
     passwordHash: string

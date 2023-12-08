@@ -1,13 +1,9 @@
 import "express-session"
+import { UserData } from "../../modules/user/user"
 
 declare module "express-session" {
     interface SessionData {
         authed: boolean
-        userInfo: {
-            email: string
-            username: string
-            id: number
-            active: boolean
-        }
+        userInfo: UserData
     }
 }

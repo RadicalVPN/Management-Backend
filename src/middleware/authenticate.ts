@@ -19,9 +19,13 @@ export async function authenticate(
     // @ts-ignore
     req.locals = {}
 
-    req.locals.user = (await new UserFactory().findUserByName(
-        req.session.userInfo.username,
+    req.locals.user = (await new UserFactory().findUserById(
+        req.session.userInfo.id,
     )) as User
+
+    if (req.locals.user?.userData?.emailVerified === false) {
+        return res.status(401).send("email not verified")
+    }
 
     next()
 }
