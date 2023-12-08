@@ -120,11 +120,18 @@ export class User {
     }
 
     async confirmEmail() {
+        //update the user
         await db
             .table("users")
             .update({
                 emailVerified: true,
             })
             .where("id", this.userData.id)
+
+        //remove the token
+        await db
+            .table("users_verify")
+            .delete()
+            .where("userId", this.userData.id)
     }
 }
