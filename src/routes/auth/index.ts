@@ -144,3 +144,15 @@ export default Router({ mergeParams: true })
 
         res.send()
     })
+    .get("/verify/:verifyToken", async (req, res, next) => {
+        const verifyToken = req.params.verifyToken
+
+        const user = await new UserFactory().findUserByVerifyToken(verifyToken)
+        if (!user) {
+            return res.status(401).send("invalid verification token")
+        }
+
+        await user.confirmEmail()
+
+        res.redirect("https://radicalvpn.com/portal")
+    })

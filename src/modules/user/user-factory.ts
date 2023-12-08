@@ -75,6 +75,37 @@ export class UserFactory {
         return new User(userData)
     }
 
+    async findUserById(userId: string): Promise<User | undefined> {
+        const userData: UserData | undefined = (
+            await db.table("users").select("*").where("id", userId)
+        )?.[0]
+
+        if (!userData) {
+            return
+        }
+
+        return new User(userData)
+    }
+
+    async findUserByVerifyToken(
+        verifyToken: string,
+    ): Promise<User | undefined> {
+        const userId = (
+            await db
+                .table("users_verify")
+                .select("userId")
+                .where("verifyToken", verifyToken)
+                .where("createdAt", ">", db.raw("NOW() - INTERVAL '1 hour'"))
+                .first()
+        )?.userId
+
+        if (!userId) {
+            return
+        }
+
+        return await this.findUserById(userId)
+    }
+
     private generatePbkfs2Hash(password: Buffer, salt: Buffer) {
         return crypto.pbkdf2Sync(
             password,

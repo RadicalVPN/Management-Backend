@@ -92,8 +92,8 @@ export class User {
     }
 
     async generateVerificationCode() {
-        const verifyToken = `${randomUUID()}-${randomUUID()}
-        `
+        const verifyToken = randomUUID()
+
         //remove old tokens, so when a user resends the email, the old token gets invalidated
         await db
             .table("users_verify")
@@ -112,7 +112,19 @@ export class User {
             templateName: "email-confirmation",
             templateData: {
                 username: this.userData.username,
+                verificationUrl: `https://radicalvpn.com/api/1.0/auth/verify/${verifyToken}`,
             },
         })
+
+        return verifyToken
+    }
+
+    async confirmEmail() {
+        await db
+            .table("users")
+            .update({
+                emailVerified: true,
+            })
+            .where("id", this.userData.id)
     }
 }
