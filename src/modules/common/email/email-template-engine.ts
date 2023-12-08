@@ -4,20 +4,21 @@ import path from "path"
 import { Email } from "./email"
 
 type TTemplateDataOptions = Record<string, any>
+interface ITemplateArgs {
+    templateName: string
+    templateData: TTemplateDataOptions
+}
 
 export class EmailTemplateEngine extends Email {
-    template: string
-    templateData: TTemplateDataOptions
-
-    constructor(template: string, templateData: TTemplateDataOptions) {
+    constructor() {
         super()
-
-        this.template = template
-        this.templateData = templateData
     }
 
-    async sendTemplate(to: string, subject: string) {
-        const html = await this.renderTemplate(this.template, this.templateData)
+    async sendTemplate(template: ITemplateArgs, to: string, subject: string) {
+        const html = await this.renderTemplate(
+            template.templateName,
+            template.templateData,
+        )
         if (!html) {
             console.error("skip sending email, invalid template")
             return

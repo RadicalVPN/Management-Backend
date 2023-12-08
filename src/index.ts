@@ -2,6 +2,7 @@ import cluster from "node:cluster"
 import { config } from "./config"
 import { DockerProcessInspector } from "./docker-process-inspector"
 import { InternalMetrics } from "./internal-services/internal-metrics"
+import { EmailQueueWorker } from "./modules/common/email/email-queue-worker"
 import { NodeAvailabilityChecker } from "./modules/nodes/node-availability-check"
 import { VpnGarbageCollector } from "./modules/vpn-gc"
 import * as util from "./util"
@@ -45,6 +46,7 @@ const internalMetrics = new InternalMetrics()
         onClusterError()
         await NodeAvailabilityChecker.startCheckInterval()
         new VpnGarbageCollector()
+        new EmailQueueWorker().startWorker()
     } else {
         console.log(
             `Starting Radical VPN Backend Server - Cluster Worker ${process.pid}`,
