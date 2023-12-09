@@ -15,15 +15,20 @@ export class Session {
         })
     }
 
-    async invalidateAllUserSessions(email: string) {
+    async invalidateAllUserSessions(
+        email: string,
+        ignoredSessions: string[] = [],
+    ) {
         const redis = await Redis.getInstance()
-        const keys: string[] = []
+        let keys: string[] = []
 
         for await (const key of redis.scanIterator({
             MATCH: `radical_vpn:session:${email}:*`,
         })) {
             keys.push(key)
         }
+
+        keys = keys.filter((key) => !ignoredSessions.includes(key))
 
         const cnt = await redis.del(keys)
         console.log(`invalidated ${cnt} sessions for user ${email}`)

@@ -62,7 +62,9 @@ export default Router({ mergeParams: true })
         }
 
         await user.updatePassword(data.newPassword)
-        await new Session().invalidateAllUserSessions(user.userData.email)
+        await new Session().invalidateAllUserSessions(user.userData.email, [
+            `radical_vpn:session:${req.sessionID}`,
+        ])
 
         res.send()
     })
