@@ -105,16 +105,7 @@ export class User {
             verifyToken: verifyToken,
         })
 
-        //send our invite email
-        await new EmailQueueManager().addJob({
-            to: this.userData.email,
-            subject: "RadicalVPN - Verify your email",
-            templateName: "email-confirmation",
-            templateData: {
-                username: this.userData.username,
-                verificationUrl: `https://radicalvpn.com/api/1.0/auth/verify/${verifyToken}`,
-            },
-        })
+        await this.sendVerificationEmail(verifyToken)
 
         return verifyToken
     }
@@ -133,5 +124,17 @@ export class User {
             .table("users_verify")
             .delete()
             .where("userId", this.userData.id)
+    }
+
+    private async sendVerificationEmail(verifyToken: string) {
+        await new EmailQueueManager().addJob({
+            to: this.userData.email,
+            subject: "RadicalVPN - Verify your email",
+            templateName: "email-confirmation",
+            templateData: {
+                username: this.userData.username,
+                verificationUrl: `https://radicalvpn.com/api/1.0/auth/verify/${verifyToken}`,
+            },
+        })
     }
 }
