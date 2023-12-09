@@ -30,7 +30,10 @@ export class Session {
 
         keys = keys.filter((key) => !ignoredSessions.includes(key))
 
-        const cnt = await redis.del(keys)
-        console.log(`invalidated ${cnt} sessions for user ${email}`)
+        if (keys.length > 0) {
+            const cnt = await redis.del(keys)
+
+            console.log(`invalidated ${cnt} sessions for user ${email}`)
+        }
     }
 }
