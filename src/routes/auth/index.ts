@@ -1,6 +1,5 @@
 import { Router } from "express"
 import totp from "totp-generator"
-import { uid } from "uid/secure"
 import { CloudflareTurnstile } from "../../modules/cloudfare-turnstile"
 import { Session } from "../../modules/session"
 import { User } from "../../modules/user/user"
@@ -92,7 +91,7 @@ export default Router({ mergeParams: true })
         }
 
         //custom session id to invalidate all sessions on password change
-        req.sessionID = `user:${realUser.userData.id}:${uid(32)}`
+        //req.sessionID = `user:${realUser.userData.id}:${uid(32)}`
 
         req.session.authed = true
         req.session.userInfo = {

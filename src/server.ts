@@ -36,10 +36,10 @@ import * as util from "./util"
         store: redisStore,
         secret: config.SERVER.SESSION_SECRET,
         name: "RADICAL_SESSION_ID",
-        resave: true,
-        saveUninitialized: true,
+        resave: false,
+        saveUninitialized: false,
         cookie: {
-            secure: false,
+            secure: config.SERVER.NODE_ENV === "production",
         },
     }
     if (app.get("env") === "production") {

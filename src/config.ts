@@ -35,6 +35,7 @@ export const config = {
                 cpus().length.toString(),
             ),
         ),
+        NODE_ENV: parseEnviromentVariable("NODE_ENV", "development"),
     },
     POSTGRES: {
         USERNAME: parseEnviromentVariable(
