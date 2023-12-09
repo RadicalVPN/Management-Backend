@@ -1,5 +1,6 @@
 import { Router } from "express"
 import { UserError } from "../../modules/common/user-error"
+import { Session } from "../../modules/session"
 import { User } from "../../modules/user/user"
 import { UserFactory } from "../../modules/user/user-factory"
 import { JSONSchemaValidator } from "../../schema-validator"
@@ -61,6 +62,7 @@ export default Router({ mergeParams: true })
         }
 
         await user.updatePassword(data.newPassword)
+        await new Session().invalidateAllUserSessions(user.userData.email)
 
         res.send()
     })
