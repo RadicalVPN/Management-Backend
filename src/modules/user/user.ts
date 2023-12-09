@@ -2,6 +2,7 @@ import crypto, { randomUUID } from "crypto"
 import { db } from "../../database"
 import { Base32 } from "../base32"
 import { EmailQueueManager } from "../common/email/email-queue-manager"
+import { CommonHashing } from "../common/hashing"
 import { UserError } from "../common/user-error"
 
 export interface UserData {
@@ -124,6 +125,18 @@ export class User {
             .table("users_verify")
             .delete()
             .where("userId", this.userData.id)
+    }
+
+    async updatePassword(password: string) {
+        const hashData = await CommonHashing.hashString(password)
+
+        await db
+            .table("users")
+            .update({
+                passwordHash: hashData.hash,
+                passwordSalt: hashData.salt,
+            })
+            .where("id", this.userData.id)
     }
 
     private async sendVerificationEmail(verifyToken: string) {

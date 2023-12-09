@@ -53,6 +53,7 @@
         "qrcode": "^1.5.3",
         "redis": "^4.6.10",
         "sqlite3": "^5.1.6",
-        "totp-generator": "^0.0.14"
+        "totp-generator": "^0.0.14",
+        "uid": "^2.0.2"
     }
 }

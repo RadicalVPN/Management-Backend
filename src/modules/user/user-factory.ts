@@ -1,15 +1,9 @@
-import * as crypto from "crypto"
 import { db } from "../../database"
+import { CommonHashing } from "../common/hashing"
 import { User, UserData } from "./user"
 
 export class UserCreationError extends Error {}
 export class UserFactory {
-    static pbkdf2Config = {
-        iterations: 210_000,
-        keyLen: 64,
-        digest: "sha512",
-    }
-
     async getAll() {
         const data = await db.table("users").select("*")
         return data.map((_data) => new User(_data))
@@ -25,14 +19,13 @@ export class UserFactory {
             )
         }
 
-        const salt = crypto.randomBytes(64)
-        const hash = this.generatePbkfs2Hash(Buffer.from(password), salt)
+        const hashData = await CommonHashing.hashString(password)
 
         await db.table("users").insert({
             username,
             email,
-            passwordHash: hash.toString("hex"),
-            passwordSalt: salt.toString("hex"),
+            passwordHash: hashData.hash,
+            passwordSalt: hashData.salt,
             active: true,
         })
     }
@@ -43,7 +36,7 @@ export class UserFactory {
             return false
         }
 
-        const hash = this.generatePbkfs2Hash(
+        const hash = await CommonHashing.generatePbkfs2Hash(
             Buffer.from(password),
             Buffer.from(user.userData.passwordSalt, "hex"),
         )
@@ -104,16 +97,6 @@ export class UserFactory {
         }
 
         return await this.findUserById(userId)
-    }
-
-    private generatePbkfs2Hash(password: Buffer, salt: Buffer) {
-        return crypto.pbkdf2Sync(
-            password,
-            salt,
-            UserFactory.pbkdf2Config.iterations,
-            UserFactory.pbkdf2Config.keyLen,
-            UserFactory.pbkdf2Config.digest,
-        )
     }
 
     static computeTotpUri(secret: string, email: string, username: string) {
