@@ -90,9 +90,6 @@ export default Router({ mergeParams: true })
             await new Session().regenerate(30 * 24 * 60 * 60 * 1000, req)
         }
 
-        //custom session id to invalidate all sessions on password change
-        //req.sessionID = `user:${realUser.userData.id}:${uid(32)}`
-
         req.session.authed = true
         req.session.userInfo = {
             active: realUser.userData.active == 1,

@@ -2,6 +2,7 @@ import RedisStore from "connect-redis"
 import express from "express"
 import expressSession from "express-session"
 import morgan from "morgan"
+import { uid } from "uid/secure"
 import { config } from "./config"
 import { PrometheusServiceDiscovery } from "./internal-services/prometheus-service-discovery"
 import { Metrics } from "./metrics"
@@ -41,6 +42,16 @@ import * as util from "./util"
         cookie: {
             secure: config.SERVER.NODE_ENV === "production",
         },
+        genid(req) {
+            const email = req?.body?.email
+
+            //usually we only generate a session on login
+            if (email) {
+                return `${email}:${uid(24)}}`
+            } else {
+                return uid(24)
+            }
+        },
     }
     if (app.get("env") === "production") {
         app.set("trust proxy", 1)
@@ -49,8 +60,11 @@ import * as util from "./util"
         sessionConfig.cookie.secure = true
     }
 
-    app.use(expressSession(sessionConfig))
+    //make sure to parse json body before session middleware!
     app.use(express.json())
+
+    app.use(expressSession(sessionConfig))
+
     app.use(morgan("dev"))
 
     //register main router
