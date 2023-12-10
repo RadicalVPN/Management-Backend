@@ -135,6 +135,8 @@ export class OAuth {
 
         if (error instanceof OAuth2Server.UnauthorizedRequestError) {
             return res.send()
+        } else {
+            console.error(error)
         }
 
         return res.send({ error: error.name, error_description: error.message })

@@ -74,10 +74,8 @@ const app = express()
     app.oauth = new OAuth({
         model: new OAuthModel(),
         authenticateHandler: {
-            handle: (_req: express.Request, res: express.Response) => {
-                // TODO: ADD USER OBJECT HERE
-                return {}
-            },
+            handle: (req: express.Request, res: express.Response) =>
+                req?.locals?.user?.userData,
         },
     })
 

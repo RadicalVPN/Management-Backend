@@ -5,26 +5,43 @@ import { db } from "../database"
 /* eslint-disable */
 
 export class OAuthModel implements OAuth2Server.AuthorizationCodeModel {
-    generateRefreshToken?(
-        client: OAuth2Server.Client,
-        user: OAuth2Server.User,
-        scope: string[],
-    ): Promise<string> {
-        throw new Error("Method not implemented.")
-    }
-    generateAuthorizationCode?(
-        client: OAuth2Server.Client,
-        user: OAuth2Server.User,
-        scope: string[],
-    ): Promise<string> {
-        throw new Error("Method not implemented.")
-    }
-    getAuthorizationCode(
+    async getAuthorizationCode(
         authorizationCode: string,
     ): Promise<OAuth2Server.AuthorizationCode | OAuth2Server.Falsey> {
-        throw new Error("Method not implemented.")
+        const authorizationCodeData = await db
+            .table("oauth_authorization_codes")
+            .join(
+                "oauth_clients",
+                "oauth_clients.clientId",
+                "oauth_authorization_codes.clientId",
+            )
+            .join("users", "users.id", "oauth_authorization_codes.userId")
+            .select("*")
+            .where("authorizationCode", authorizationCode)
+            .first()
+
+        if (!authorizationCodeData) {
+            return
+        }
+
+        return {
+            authorizationCode: authorizationCodeData.authorizationCode,
+            expiresAt: authorizationCodeData.expiresAt,
+            scope: authorizationCodeData.scope?.split(","),
+            redirectUri: authorizationCodeData.redirectUri,
+            client: {
+                id: authorizationCodeData.clientId,
+                clientId: authorizationCodeData.clientId,
+                grants: authorizationCodeData.grants?.split(","),
+                redirectUris: authorizationCodeData.redirectUri?.split(","),
+            },
+            user: {
+                id: authorizationCodeData.userId,
+                username: authorizationCodeData.username,
+            },
+        }
     }
-    saveAuthorizationCode(
+    async saveAuthorizationCode(
         code: Pick<
             OAuth2Server.AuthorizationCode,
             | "redirectUri"
@@ -37,32 +54,23 @@ export class OAuthModel implements OAuth2Server.AuthorizationCodeModel {
         client: OAuth2Server.Client,
         user: OAuth2Server.User,
     ): Promise<OAuth2Server.AuthorizationCode | OAuth2Server.Falsey> {
-        throw new Error("Method not implemented.")
-    }
-    revokeAuthorizationCode(
-        code: OAuth2Server.AuthorizationCode,
-    ): Promise<boolean> {
-        throw new Error("Method not implemented.")
-    }
-    validateScope?(
-        user: OAuth2Server.User,
-        client: OAuth2Server.Client,
-        scope: string[],
-    ): Promise<string[] | OAuth2Server.Falsey> {
-        throw new Error("Method not implemented.")
-    }
-    validateRedirectUri?(
-        redirect_uri: string,
-        client: OAuth2Server.Client,
-    ): Promise<boolean> {
-        throw new Error("Method not implemented.")
-    }
-    generateAccessToken?(
-        client: OAuth2Server.Client,
-        user: OAuth2Server.User,
-        scope: string[],
-    ): Promise<string> {
-        throw new Error("Method not implemented.")
+        const data = {
+            authorizationCode: code.authorizationCode,
+            expiresAt: code.expiresAt,
+            redirectUri: code.redirectUri,
+            ...(code.scope && { scope: code.scope.join(",") }),
+            userId: user.id,
+            clientId: client.id,
+        }
+
+        await db.table("oauth_authorization_codes").insert(data)
+
+        return {
+            ...data,
+            scope: code?.scope,
+            client: client,
+            user: user,
+        }
     }
     async getClient(
         clientId: string,
@@ -76,11 +84,11 @@ export class OAuthModel implements OAuth2Server.AuthorizationCodeModel {
             .table("oauth_clients")
             .select("*")
             .where("clientId", clientId)
-            .modify(async (queryBuilder) => {
-                if (clientSecret) {
-                    await queryBuilder.where("clientSecret", clientSecret)
-                }
-            })
+            // .modify(async (queryBuilder) => {
+            //     if (clientSecret) {
+            //         await queryBuilder.where("clientSecret", clientSecret)
+            //     }
+            // })
             .first()
 
         return {
@@ -91,16 +99,44 @@ export class OAuthModel implements OAuth2Server.AuthorizationCodeModel {
             redirectUris: client.redirectUri.split(","),
         }
     }
-    saveToken(
+    async revokeAuthorizationCode(
+        code: OAuth2Server.AuthorizationCode,
+    ): Promise<boolean> {
+        const result = await db
+            .table("oauth_authorization_codes")
+            .where("authorizationCode", code.authorizationCode)
+            .where("clientId", code.client.id)
+            .where("userId", code.user.id)
+            .delete()
+
+        return result > 0
+    }
+    async saveToken(
         token: OAuth2Server.Token,
         client: OAuth2Server.Client,
         user: OAuth2Server.User,
     ): Promise<OAuth2Server.Token | OAuth2Server.Falsey> {
-        throw new Error("Method not implemented.")
+        const data = {
+            accessToken: token.accessToken,
+            accessTokenExpiresAt: token.accessTokenExpiresAt,
+            refreshToken: token.refreshToken,
+            refreshTokenExpiresAt: token.refreshTokenExpiresAt,
+            userId: user.id,
+            clientId: client.id,
+        }
+
+        await db.table("oauth_access_tokens").insert(data)
+
+        return {
+            ...data,
+            client: client,
+            user: user,
+        }
     }
     getAccessToken(
         accessToken: string,
     ): Promise<OAuth2Server.Token | OAuth2Server.Falsey> {
+        console.log("get access token")
         throw new Error("Method not implemented.")
     }
 }

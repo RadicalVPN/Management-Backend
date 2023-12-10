@@ -9,7 +9,7 @@ export async function up(knex: Knex): Promise<void> {
                 .defaultTo(knex.raw("uuid_generate_v4()"))
 
             table.string("authorizationCode")
-            table.date("expiresAt")
+            table.timestamp("expiresAt")
             table.string("redirectUri")
             table.string("scope")
             table.uuid("userId")

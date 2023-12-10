@@ -9,10 +9,10 @@ export async function up(knex: Knex): Promise<void> {
                 .defaultTo(knex.raw("uuid_generate_v4()"))
 
             table.string("accessToken")
-            table.date("accessTokenExpiresAt")
+            table.timestamp("accessTokenExpiresAt")
 
             table.string("refreshToken")
-            table.date("refreshTokenExpiresAt")
+            table.timestamp("refreshTokenExpiresAt")
 
             table.uuid("userId")
             table.uuid("clientId")
