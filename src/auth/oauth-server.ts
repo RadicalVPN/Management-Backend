@@ -50,7 +50,7 @@ export class OAuth {
         }
     }
 
-    authorize(options: OAuth2Server.AuthorizeOptions) {
+    authorize(options?: OAuth2Server.AuthorizeOptions) {
         return async (
             req: express.Request,
             res: express.Response,
@@ -73,7 +73,7 @@ export class OAuth {
         }
     }
 
-    token(options: OAuth2Server.TokenOptions) {
+    token(options?: OAuth2Server.TokenOptions) {
         return async (
             req: express.Request,
             res: express.Response,
@@ -119,14 +119,21 @@ export class OAuth {
         next: express.NextFunction,
     ) {
         if (this.useErrorHandler) {
+            console.log("use error handler")
             return next(error)
         }
 
-        if (oauthResponse) {
+        if (Object.keys(oauthResponse?.headers || {}).length > 0) {
+            console.log("oauth response", oauthResponse.headers)
             res.set(oauthResponse.headers)
         }
 
-        res.status(error.code || 500)
+        //use 500 if status code is not valid
+        if (!(error.code >= 100 && error.code <= 599)) {
+            error.code = 500
+        }
+
+        res.status(error.code)
 
         if (error instanceof OAuth2Server.UnauthorizedRequestError) {
             return res.send()

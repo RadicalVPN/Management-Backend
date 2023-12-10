@@ -1,4 +1,6 @@
 import * as OAuth2Server from "@node-oauth/oauth2-server"
+import { validate as uuidValidate } from "uuid"
+import { db } from "../database"
 
 /* eslint-disable */
 
@@ -62,11 +64,29 @@ export class OAuthModel implements OAuth2Server.AuthorizationCodeModel {
     ): Promise<string> {
         throw new Error("Method not implemented.")
     }
-    getClient(
+    async getClient(
         clientId: string,
-        clientSecret: string,
+        _clientSecret: string,
     ): Promise<OAuth2Server.Client | OAuth2Server.Falsey> {
-        throw new Error("Method not implemented.")
+        if (!uuidValidate(clientId)) {
+            return
+        }
+
+        console.log(clientId, _clientSecret)
+
+        const client = await db
+            .table("oauth_clients")
+            .select("*")
+            .where("clientId", clientId)
+            //.where("clientSecret", clientSecret)
+            .first()
+
+        return {
+            id: client.clientId,
+            clientId: client.clientId,
+            grants: client.grants.split(","),
+            redirectUris: client.redirectUri.split(","),
+        }
     }
     saveToken(
         token: OAuth2Server.Token,

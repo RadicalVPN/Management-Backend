@@ -3,6 +3,8 @@ import express from "express"
 import expressSession from "express-session"
 import morgan from "morgan"
 import { uid } from "uid/secure"
+import { OAuthModel } from "./auth/oauth-model"
+import { OAuth } from "./auth/oauth-server"
 import { config } from "./config"
 import { PrometheusServiceDiscovery } from "./internal-services/prometheus-service-discovery"
 import { Metrics } from "./metrics"
@@ -12,6 +14,8 @@ import { ConfigManager } from "./modules/server/config-manager"
 import mainRouter from "./routes/index"
 import { JSONSchemaValidator } from "./schema-validator"
 import * as util from "./util"
+
+const app = express()
 ;(async () => {
     console.log("starting radical vpn backend server")
 
@@ -23,7 +27,6 @@ import * as util from "./util"
         process.exit(1)
     }
 
-    const app = express()
     const redis = await Redis.getInstance()
 
     // Initialize store.
@@ -62,10 +65,21 @@ import * as util from "./util"
 
     //make sure to parse json body before session middleware!
     app.use(express.json())
+    app.use(express.urlencoded({ extended: false }))
 
     app.use(expressSession(sessionConfig))
 
     app.use(morgan("dev"))
+
+    app.oauth = new OAuth({
+        model: new OAuthModel(),
+        authenticateHandler: {
+            handle: (_req: express.Request, res: express.Response) => {
+                // TODO: ADD USER OBJECT HERE
+                return {}
+            },
+        },
+    })
 
     //register main router
     app.use(mainRouter)
@@ -97,3 +111,5 @@ import * as util from "./util"
     console.error("Failed to start RadicalVPN Server Worker", err)
     process.exit(1)
 })
+
+export default app
