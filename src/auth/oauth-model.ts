@@ -66,7 +66,7 @@ export class OAuthModel implements OAuth2Server.AuthorizationCodeModel {
     }
     async getClient(
         clientId: string,
-        _clientSecret: string,
+        clientSecret: string,
     ): Promise<OAuth2Server.Client | OAuth2Server.Falsey> {
         if (!uuidValidate(clientId)) {
             return
@@ -76,12 +76,17 @@ export class OAuthModel implements OAuth2Server.AuthorizationCodeModel {
             .table("oauth_clients")
             .select("*")
             .where("clientId", clientId)
-            //.where("clientSecret", clientSecret)
+            .modify(async (queryBuilder) => {
+                if (clientSecret) {
+                    await queryBuilder.where("clientSecret", clientSecret)
+                }
+            })
             .first()
 
         return {
             id: client.clientId,
             clientId: client.clientId,
+            ...(client.clientSecret && { clientSecret: client.clientSecret }),
             grants: client.grants.split(","),
             redirectUris: client.redirectUri.split(","),
         }
