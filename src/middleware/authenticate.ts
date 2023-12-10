@@ -8,8 +8,6 @@ export async function authenticate(
     next: NextFunction,
 ) {
     //authenticiation middleware, next routers need all a signed in user!
-    console.log(req.locals)
-
     if (!req.session.authed) {
         return res.status(401).send("not authenticated")
     }
