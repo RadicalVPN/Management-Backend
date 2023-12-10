@@ -2,8 +2,6 @@ import * as OAuth2Server from "@node-oauth/oauth2-server"
 import { validate as uuidValidate } from "uuid"
 import { db } from "../database"
 
-/* eslint-disable */
-
 export class OAuthModel implements OAuth2Server.AuthorizationCodeModel {
     async getAuthorizationCode(
         authorizationCode: string,
@@ -41,6 +39,7 @@ export class OAuthModel implements OAuth2Server.AuthorizationCodeModel {
             },
         }
     }
+
     async saveAuthorizationCode(
         code: Pick<
             OAuth2Server.AuthorizationCode,
@@ -72,9 +71,10 @@ export class OAuthModel implements OAuth2Server.AuthorizationCodeModel {
             user: user,
         }
     }
+
     async getClient(
         clientId: string,
-        clientSecret: string,
+        _clientSecret: string,
     ): Promise<OAuth2Server.Client | OAuth2Server.Falsey> {
         if (!uuidValidate(clientId)) {
             return
@@ -99,6 +99,7 @@ export class OAuthModel implements OAuth2Server.AuthorizationCodeModel {
             redirectUris: client.redirectUri.split(","),
         }
     }
+
     async revokeAuthorizationCode(
         code: OAuth2Server.AuthorizationCode,
     ): Promise<boolean> {
@@ -111,6 +112,7 @@ export class OAuthModel implements OAuth2Server.AuthorizationCodeModel {
 
         return result > 0
     }
+
     async saveToken(
         token: OAuth2Server.Token,
         client: OAuth2Server.Client,
@@ -133,6 +135,7 @@ export class OAuthModel implements OAuth2Server.AuthorizationCodeModel {
             user: user,
         }
     }
+
     async getAccessToken(
         accessToken: string,
     ): Promise<OAuth2Server.Token | OAuth2Server.Falsey> {
@@ -167,5 +170,54 @@ export class OAuthModel implements OAuth2Server.AuthorizationCodeModel {
                 username: accessTokenData.username,
             },
         }
+    }
+
+    async getRefreshToken(
+        refreshToken: string,
+    ): Promise<OAuth2Server.RefreshToken | OAuth2Server.Falsey> {
+        const refreshTokenData = await db
+            .table("oauth_access_tokens")
+            .join(
+                "oauth_clients",
+                "oauth_clients.clientId",
+                "oauth_access_tokens.clientId",
+            )
+            .join("users", "users.id", "oauth_access_tokens.userId")
+            .select("*")
+            .where("refreshToken", refreshToken)
+            .first()
+
+        if (!refreshTokenData) {
+            return
+        }
+
+        return {
+            refreshToken: refreshTokenData.refreshToken,
+            refreshTokenExpiresAt: refreshTokenData.refreshTokenExpiresAt,
+            scope: refreshTokenData.scope?.split(","),
+            client: {
+                id: refreshTokenData.clientId,
+                clientId: refreshTokenData.clientId,
+                grants: refreshTokenData.grants?.split(","),
+                redirectUris: refreshTokenData.redirectUri?.split(","),
+            },
+            user: {
+                id: refreshTokenData.userId,
+                username: refreshTokenData.username,
+            },
+        }
+    }
+
+    async revokeToken(
+        refreshToken: OAuth2Server.RefreshToken,
+    ): Promise<boolean> {
+        const result = await db
+            .table("oauth_access_tokens")
+            .where("refreshToken", refreshToken.refreshToken)
+            .where("clientId", refreshToken.client.id)
+            .where("userId", refreshToken.user.id)
+            .delete()
+
+        return result > 0
     }
 }
