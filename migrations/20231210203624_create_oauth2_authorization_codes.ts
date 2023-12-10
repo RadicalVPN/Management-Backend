@@ -13,7 +13,7 @@ export async function up(knex: Knex): Promise<void> {
             table.string("redirectUri")
             table.string("scope")
             table.uuid("userId")
-            table.string("clientId")
+            table.uuid("clientId")
 
             table.foreign("userId").references("users.id")
             table.foreign("clientId").references("oauth_clients.clientId")
