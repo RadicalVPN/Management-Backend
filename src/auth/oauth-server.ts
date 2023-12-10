@@ -1,6 +1,7 @@
 import * as OAuth2Server from "@node-oauth/oauth2-server"
 import OAuthServer, { Request, Response } from "@node-oauth/oauth2-server"
 import express from "express"
+import { UserFactory } from "../modules/user/user-factory"
 
 interface IOAuthServerOptions extends OAuth2Server.ServerOptions {
     useErrorHandler?: boolean
@@ -26,7 +27,7 @@ export class OAuth {
         this.server = new OAuthServer(this.options)
     }
 
-    authenticate(options: OAuth2Server.AuthenticateOptions) {
+    authenticate(options?: OAuth2Server.AuthenticateOptions) {
         return async (
             req: express.Request,
             res: express.Response,
@@ -34,8 +35,13 @@ export class OAuth {
         ) => {
             const request = new Request(req)
             const response = new Response(res)
-            let token
+            let token: OAuth2Server.Token
+            if (req.session?.authed === true) {
+                return next()
+            }
+
             try {
+                console.log("get token")
                 token = await this.server.authenticate(
                     request,
                     response,
@@ -45,7 +51,25 @@ export class OAuth {
                 this.handleError(res, null, err, next)
                 return
             }
-            res.locals.oauth = { token }
+
+            const user = await new UserFactory().findUserById(token.user.id)
+            if (!user) {
+                return res
+                    .status(500)
+                    .send({ error: "User not found by oauth2 access token" })
+            }
+
+            req.session.authed = true
+            req.session.userInfo = {
+                active: user.userData.active == 1,
+                email: user.userData.email,
+                username: user.userData.username,
+                id: user.userData.id,
+            }
+
+            req.locals = req.locals || {}
+            req.locals.oauth = { token }
+
             return next()
         }
     }

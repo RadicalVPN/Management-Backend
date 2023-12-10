@@ -133,10 +133,39 @@ export class OAuthModel implements OAuth2Server.AuthorizationCodeModel {
             user: user,
         }
     }
-    getAccessToken(
+    async getAccessToken(
         accessToken: string,
     ): Promise<OAuth2Server.Token | OAuth2Server.Falsey> {
-        console.log("get access token")
-        throw new Error("Method not implemented.")
+        const accessTokenData = await db
+            .table("oauth_access_tokens")
+            .join(
+                "oauth_clients",
+                "oauth_clients.clientId",
+                "oauth_access_tokens.clientId",
+            )
+            .join("users", "users.id", "oauth_access_tokens.userId")
+            .select("*")
+            .where("accessToken", accessToken)
+            .first()
+
+        if (!accessTokenData) {
+            return
+        }
+
+        return {
+            accessToken: accessTokenData.accessToken,
+            accessTokenExpiresAt: accessTokenData.accessTokenExpiresAt,
+            scope: accessTokenData.scope?.split(","),
+            client: {
+                id: accessTokenData.clientId,
+                clientId: accessTokenData.clientId,
+                grants: accessTokenData.grants?.split(","),
+                redirectUris: accessTokenData.redirectUri?.split(","),
+            },
+            user: {
+                id: accessTokenData.userId,
+                username: accessTokenData.username,
+            },
+        }
     }
 }
