@@ -24,6 +24,7 @@
         "@types/nodemailer": "^6.4.14",
         "@types/qrcode": "^1.5.5",
         "@types/totp-generator": "^0.0.8",
+        "@types/uuid": "^9.0.7",
         "@typescript-eslint/eslint-plugin": "^6.11.0",
         "@typescript-eslint/parser": "^6.11.0",
         "eslint": "^8.53.0",
@@ -35,6 +36,7 @@
         "typescript": "^5.2.2"
     },
     "dependencies": {
+        "@node-oauth/oauth2-server": "^5.0.0",
         "ajv": "^8.12.0",
         "ajv-formats": "^2.1.1",
         "axios": "^1.6.2",
@@ -54,6 +56,7 @@
         "redis": "^4.6.10",
         "sqlite3": "^5.1.6",
         "totp-generator": "^0.0.14",
-        "uid": "^2.0.2"
+        "uid": "^2.0.2",
+        "uuid": "^9.0.1"
     }
 }
