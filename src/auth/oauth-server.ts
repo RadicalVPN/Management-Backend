@@ -119,12 +119,10 @@ export class OAuth {
         next: express.NextFunction,
     ) {
         if (this.useErrorHandler) {
-            console.log("use error handler")
             return next(error)
         }
 
         if (Object.keys(oauthResponse?.headers || {}).length > 0) {
-            console.log("oauth response", oauthResponse.headers)
             res.set(oauthResponse.headers)
         }
 
