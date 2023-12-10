@@ -72,8 +72,6 @@ export class OAuthModel implements OAuth2Server.AuthorizationCodeModel {
             return
         }
 
-        console.log(clientId, _clientSecret)
-
         const client = await db
             .table("oauth_clients")
             .select("*")
