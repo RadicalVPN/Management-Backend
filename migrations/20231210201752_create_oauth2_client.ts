@@ -9,7 +9,6 @@ export async function up(knex: Knex): Promise<void> {
                 .defaultTo(knex.raw("uuid_generate_v4()"))
 
             table.string("clientName")
-            table.string("clientSecret")
             table.string("redirectUri")
             table.string("grants")
 
