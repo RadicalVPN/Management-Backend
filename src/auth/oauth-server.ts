@@ -41,7 +41,6 @@ export class OAuth {
             }
 
             try {
-                console.log("get token")
                 token = await this.server.authenticate(
                     request,
                     response,
