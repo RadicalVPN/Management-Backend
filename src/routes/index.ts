@@ -12,7 +12,7 @@ import userRouter from "./user/index"
 import vpnRouter from "./vpn/index"
 
 export default Router({ mergeParams: true })
-    .use("/api/:version/auth", authRouter)
+    .use("/api/:version/auth", authInfoRouter)
     .use("/api/:version/configuration", configurationRouter)
     .use(
         async (req, res, next) =>
@@ -20,7 +20,7 @@ export default Router({ mergeParams: true })
                 allowBearerTokensInQueryString: true,
             })(req, res, next),
     )
-    .get("/api/:version/auth", authInfoRouter)
+    .get("/api/:version/auth", authRouter)
     .use(authenticate)
     .use("/api/:version/oauth2", oauth2Router)
     .use("/api/:version/internal", daemonRouter)
