@@ -1,9 +1,14 @@
 import { Router } from "express"
+import { authenticate } from "../../middleware/authenticate"
 import { OAuth2ClientFactory } from "../../modules/oauth/oauth2-factory"
 import app from "../../server"
 
 export default Router({ mergeParams: true })
-    .get("/client/:clientId", async (req, res, next) => {
+    .post(
+        "/token",
+        async (req, res, next) => await app.oauth.token()(req, res, next),
+    )
+    .get("/client/:clientId", authenticate, async (req, res, next) => {
         const client = await new OAuth2ClientFactory().get(req.params.clientId)
 
         if (!client) {
@@ -14,9 +19,6 @@ export default Router({ mergeParams: true })
     })
     .post(
         "/authorize",
+        authenticate,
         async (req, res, next) => await app.oauth.authorize()(req, res, next),
-    )
-    .post(
-        "/token",
-        async (req, res, next) => await app.oauth.token()(req, res, next),
     )

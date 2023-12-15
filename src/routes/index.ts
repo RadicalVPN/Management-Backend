@@ -14,6 +14,7 @@ import vpnRouter from "./vpn/index"
 export default Router({ mergeParams: true })
     .use("/api/:version/auth", authInfoRouter, authRouter)
     .use("/api/:version/configuration", configurationRouter)
+    .use("/api/:version/oauth2", oauth2Router)
     .use(
         async (req, res, next) =>
             await app.oauth.authenticate({
@@ -22,7 +23,6 @@ export default Router({ mergeParams: true })
     )
     .get("/api/:version/me", authInfoRouter)
     .use(authenticate)
-    .use("/api/:version/oauth2", oauth2Router)
     .use("/api/:version/internal", daemonRouter)
     .use("/api/:version/vpn", vpnRouter)
     .use("/api/:version/auth/totp", totpRouter)
