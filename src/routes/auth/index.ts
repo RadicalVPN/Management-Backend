@@ -23,7 +23,7 @@ export default Router({ mergeParams: true })
         }
 
         const turnstile = new CloudflareTurnstile(data.turnstileChallenge)
-        if ((await turnstile.verify()) === false) {
+        if (data.turnstileChallenge && (await turnstile.verify()) === false) {
             return res.status(401).send("turnstile challenge failed")
         }
 
