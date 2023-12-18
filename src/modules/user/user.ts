@@ -171,8 +171,6 @@ export class User {
             "$",
         )) as any[]
 
-        console.log(data[0][0])
-
         const stats = data.reduce((acc, curr) => {
             const stat = curr[0] as any
 
