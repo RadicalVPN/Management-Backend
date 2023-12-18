@@ -2,6 +2,7 @@ import { Router } from "express"
 import { config } from "../../config"
 import { DynamicVpnHelper } from "../../modules/dynamic-vpn-helper"
 import { NodeFactory } from "../../modules/nodes/node-factory"
+import { UserFactory } from "../../modules/user/user-factory"
 import { VPNFactory } from "../../modules/vpn/vpn-factory"
 import { JSONSchemaValidator } from "../../schema-validator"
 
@@ -10,9 +11,8 @@ interface IDynamicVpnRequestPayload {
     privacyFirewall: "basic" | "recommended" | "comprehensive" | "aggresive"
 }
 
-export default Router({ mergeParams: true }).put(
-    "/dynamic_vpn",
-    async (req, res, next) => {
+export default Router({ mergeParams: true })
+    .put("/dynamic_vpn", async (req, res, next) => {
         const data = req.body as IDynamicVpnRequestPayload
         const schema = new JSONSchemaValidator()
         const userData = req.locals.user.userData
@@ -61,5 +61,14 @@ export default Router({ mergeParams: true }).put(
         await newVpn.deletePrivateKey()
 
         res.send(configuration)
-    },
-)
+    })
+    .get("/privacy_firewall", async (req, res, next) => {
+        const user = await new UserFactory().findUserByName(
+            req.session?.userInfo?.username || "",
+        )
+        if (!user) {
+            return res.status(500).send()
+        }
+
+        res.send(await user.getPrivacyFirewallStats())
+    })

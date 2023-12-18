@@ -4,6 +4,7 @@ import { Base32 } from "../base32"
 import { EmailQueueManager } from "../common/email/email-queue-manager"
 import { CommonHashing } from "../common/hashing"
 import { UserError } from "../common/user-error"
+import { Redis } from "../redis"
 
 export interface UserData {
     id: string
@@ -137,6 +138,64 @@ export class User {
                 passwordSalt: hashData.salt,
             })
             .where("id", this.userData.id)
+    }
+
+    async getPrivacyFirewallStats() {
+        const redis = await Redis.getInstance()
+        const cacheKey = `privacy_firewall_result:${this.userData.id}`
+        const vpns = new Set(
+            (
+                await db
+                    .table("vpns")
+                    .select("ipv4")
+                    .where("dynamic", true)
+                    .where("userId", this.userData.id)
+            ).map((vpn) => vpn.ipv4),
+        )
+
+        const cached = await redis.get(cacheKey)
+        if (cached) {
+            return JSON.parse(cached)
+        }
+
+        const privacyFirewallStatKeys = []
+        for await (const key of redis.scanIterator({
+            MATCH: "privacy_firewall_stats:*",
+            COUNT: 100,
+        })) {
+            privacyFirewallStatKeys.push(key)
+        }
+
+        const data = (await redis.json.mGet(
+            privacyFirewallStatKeys,
+            "$",
+        )) as any[]
+
+        console.log(data[0][0])
+
+        const stats = data.reduce((acc, curr) => {
+            const stat = curr[0] as any
+
+            Object.entries<any[]>(stat).forEach(([statKey, statValue]) => {
+                if (!acc[statKey]) {
+                    acc[statKey] = 0
+                }
+
+                Object.entries(statValue).forEach(([key, value]) => {
+                    if (vpns.has(key)) {
+                        acc[statKey] += value
+                    }
+                })
+            })
+
+            return acc
+        }, {})
+
+        await redis.set(cacheKey, JSON.stringify(stats), {
+            EX: 60, // 1 minute
+        })
+
+        return stats
     }
 
     private async sendVerificationEmail(verifyToken: string) {
