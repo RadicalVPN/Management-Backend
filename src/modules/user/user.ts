@@ -157,7 +157,6 @@ export class User {
                 const privacyFirewallStatKeys = []
                 for await (const key of redis.scanIterator({
                     MATCH: "privacy_firewall_stats:*",
-                    COUNT: 100,
                 })) {
                     privacyFirewallStatKeys.push(key)
                 }
