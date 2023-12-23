@@ -141,59 +141,58 @@ export class User {
     }
 
     async getPrivacyFirewallStats() {
-        const redis = await Redis.getInstance()
-        const cacheKey = `privacy_firewall_result:${this.userData.id}`
-        const vpns = new Set(
-            (
-                await db
-                    .table("vpns")
-                    .select("ipv4")
-                    .where("dynamic", true)
-                    .where("userId", this.userData.id)
-            ).map((vpn) => vpn.ipv4),
-        )
+        return await Redis.getOrPut(
+            `privacy_firewall_result:${this.userData.id}`,
+            async (redis) => {
+                const vpns = new Set(
+                    (
+                        await db
+                            .table("vpns")
+                            .select("ipv4")
+                            .where("dynamic", true)
+                            .where("userId", this.userData.id)
+                    ).map((vpn) => vpn.ipv4),
+                )
 
-        const cached = await redis.get(cacheKey)
-        if (cached) {
-            return JSON.parse(cached)
-        }
-
-        const privacyFirewallStatKeys = []
-        for await (const key of redis.scanIterator({
-            MATCH: "privacy_firewall_stats:*",
-            COUNT: 100,
-        })) {
-            privacyFirewallStatKeys.push(key)
-        }
-
-        const data = (await redis.json.mGet(
-            privacyFirewallStatKeys,
-            "$",
-        )) as any[]
-
-        const stats = data.reduce((acc, curr) => {
-            const stat = curr[0] as any
-
-            Object.entries<any[]>(stat).forEach(([statKey, statValue]) => {
-                if (!acc[statKey]) {
-                    acc[statKey] = 0
+                const privacyFirewallStatKeys = []
+                for await (const key of redis.scanIterator({
+                    MATCH: "privacy_firewall_stats:*",
+                    COUNT: 100,
+                })) {
+                    privacyFirewallStatKeys.push(key)
                 }
 
-                Object.entries(statValue).forEach(([key, value]) => {
-                    if (vpns.has(key)) {
-                        acc[statKey] += value
-                    }
-                })
-            })
+                const data = (await redis.json.mGet(
+                    privacyFirewallStatKeys,
+                    "$",
+                )) as any[]
 
-            return acc
-        }, {})
+                return data.reduce((acc, curr) => {
+                    const stat = curr[0] as any
 
-        await redis.set(cacheKey, JSON.stringify(stats), {
-            EX: 60, // 1 minute
-        })
+                    Object.entries<any[]>(stat).forEach(
+                        ([statKey, statValue]) => {
+                            if (!acc[statKey]) {
+                                acc[statKey] = 0
+                            }
 
-        return stats
+                            Object.entries(statValue).forEach(
+                                ([key, value]) => {
+                                    if (vpns.has(key)) {
+                                        acc[statKey] += value
+                                    }
+                                },
+                            )
+                        },
+                    )
+
+                    return acc
+                }, {})
+            },
+            {
+                EX: 60, // 1 minute
+            },
+        )
     }
 
     private async sendVerificationEmail(verifyToken: string) {
