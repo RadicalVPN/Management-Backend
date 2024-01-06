@@ -21,7 +21,7 @@ export interface UserData {
 }
 
 export class User {
-    userData: Omit<UserData, "aggregatedscopes">
+    userData: UserData
 
     constructor(data: UserData) {
         this.userData = data

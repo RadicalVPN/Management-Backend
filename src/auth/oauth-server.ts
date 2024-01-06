@@ -64,6 +64,7 @@ export class OAuth {
                 email: user.userData.email,
                 username: user.userData.username,
                 id: user.userData.id,
+                scopes: user.userData.scopes,
             }
 
             req.locals = req.locals || {}
