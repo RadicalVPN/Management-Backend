@@ -8,7 +8,7 @@ export async function up(knex: Knex): Promise<void> {
                 .uuid("id", { primaryKey: true, useBinaryUuid: true })
                 .defaultTo(knex.raw("uuid_generate_v4()"))
 
-            table.string("userId")
+            table.uuid("userId")
             table.string("scopeName")
 
             table.foreign("userId").references("users.id")
