@@ -6,7 +6,7 @@
     "scripts": {
         "start": "npx nodemon",
         "build": "npx tsc && npm run copyBuildFolders",
-        "copyBuildFolders": "cp -r ./schemas ./build/schemas && cp -r ./templates ./build/templates",
+        "copyBuildFolders": "cp -r ./schemas ./build/schemas && cp -r ./templates ./build/templates && cp -r ./policy ./build/policy",
         "format": "npx prettier . --check",
         "format:fix": "npx prettier . --write",
         "lint": "eslint . --ext .ts",
