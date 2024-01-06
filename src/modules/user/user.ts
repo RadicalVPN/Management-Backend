@@ -16,13 +16,16 @@ export interface UserData {
     createdAt: string
     updatedAt: string
     emailVerified: boolean
+    aggregatedscopes: string
+    scopes: string[]
 }
 
 export class User {
-    userData: UserData
+    userData: Omit<UserData, "aggregatedscopes">
 
     constructor(data: UserData) {
         this.userData = data
+        this.userData.scopes = data.aggregatedscopes.split(",")
     }
 
     async confirmTotp() {

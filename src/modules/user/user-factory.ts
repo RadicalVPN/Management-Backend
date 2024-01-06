@@ -1,12 +1,43 @@
 import { db } from "../../database"
 import { CommonHashing } from "../common/hashing"
-import { User, UserData } from "./user"
+import { User } from "./user"
 
 export class UserCreationError extends Error {}
 export class UserFactory {
     async getAll() {
-        const data = await db.table("users").select("*")
+        const data = await db
+            .table("users")
+            .join("users_scopes", "users_scopes.userId", "users.id")
+            .select(
+                "users.*",
+                db.raw(
+                    "string_agg(users_scopes.\"scopeName\", ',') as aggregatedscopes",
+                ),
+            )
+            .groupBy("users.id")
+
         return data.map((_data) => new User(_data))
+    }
+
+    async findUserById(userId: string): Promise<User | undefined> {
+        const data = await db
+            .table("users")
+            .join("users_scopes", "users_scopes.userId", "users.id")
+            .select(
+                "users.*",
+                db.raw(
+                    "string_agg(users_scopes.\"scopeName\", ',') as aggregatedscopes",
+                ),
+            )
+            .where("users.id", userId)
+            .groupBy("users.id")
+            .first()
+
+        if (!data) {
+            return
+        }
+
+        return new User(data)
     }
 
     async add(username: string, email: string, password: string) {
@@ -45,39 +76,35 @@ export class UserFactory {
     }
 
     async findUserByEmail(email: string): Promise<User | undefined> {
-        const userData: UserData | undefined = (
-            await db.table("users").select("*").where("email", email)
-        )?.[0]
+        const userId: string | undefined = (
+            await db
+                .table("userId")
+                .select("userId")
+                .where("email", email)
+                .first()
+        )?.userId
 
-        if (!userData) {
+        if (!userId) {
             return
         }
 
-        return new User(userData)
+        return await this.findUserById(userId)
     }
 
     async findUserByName(username: string): Promise<User | undefined> {
-        const userData: UserData | undefined = (
-            await db.table("users").select("*").where("username", username)
-        )?.[0]
+        const userId: string | undefined = (
+            await db
+                .table("users")
+                .select("userId")
+                .where("username", username)
+                .first()
+        )?.userId
 
-        if (!userData) {
+        if (!userId) {
             return
         }
 
-        return new User(userData)
-    }
-
-    async findUserById(userId: string): Promise<User | undefined> {
-        const userData: UserData | undefined = (
-            await db.table("users").select("*").where("id", userId)
-        )?.[0]
-
-        if (!userData) {
-            return
-        }
-
-        return new User(userData)
+        return await this.findUserById(userId)
     }
 
     async findUserByVerifyToken(
