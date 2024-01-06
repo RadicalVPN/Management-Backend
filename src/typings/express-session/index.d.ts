@@ -8,6 +8,7 @@ declare module "express-session" {
             username: string
             id: string
             active: boolean
+            scopes: string[]
         }
     }
 }

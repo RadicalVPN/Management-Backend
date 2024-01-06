@@ -71,6 +71,7 @@ export default Router({ mergeParams: true })
             email: realUser.userData.email,
             username: realUser.userData.username,
             id: realUser.userData.id,
+            scopes: realUser.userData.scopes,
         }
 
         res.status(200).send()
