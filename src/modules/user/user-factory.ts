@@ -77,7 +77,7 @@ export class UserFactory {
 
     async findUserByEmail(email: string): Promise<User | undefined> {
         const userId: string | undefined = (
-            await db.table("userId").select("id").where("email", email).first()
+            await db.table("users").select("id").where("email", email).first()
         )?.id
 
         if (!userId) {

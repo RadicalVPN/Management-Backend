@@ -14,8 +14,8 @@ export default Router({ mergeParams: true }).get(
             return res.status(400).send("user locked")
         }
 
-        const user = (await new UserFactory().findUserByName(
-            req.session?.userInfo?.username || "",
+        const user = (await new UserFactory().findUserByEmail(
+            req.session?.userInfo?.email || "",
         )) as User
         if (!user) {
             return res.status(500).send()
