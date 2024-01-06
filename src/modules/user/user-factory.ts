@@ -77,12 +77,8 @@ export class UserFactory {
 
     async findUserByEmail(email: string): Promise<User | undefined> {
         const userId: string | undefined = (
-            await db
-                .table("userId")
-                .select("userId")
-                .where("email", email)
-                .first()
-        )?.userId
+            await db.table("userId").select("id").where("email", email).first()
+        )?.id
 
         if (!userId) {
             return
@@ -95,10 +91,10 @@ export class UserFactory {
         const userId: string | undefined = (
             await db
                 .table("users")
-                .select("userId")
+                .select("id")
                 .where("username", username)
                 .first()
-        )?.userId
+        )?.id
 
         if (!userId) {
             return
@@ -113,11 +109,11 @@ export class UserFactory {
         const userId = (
             await db
                 .table("users_verify")
-                .select("userId")
+                .select("id")
                 .where("verifyToken", verifyToken)
                 .where("createdAt", ">", db.raw("NOW() - INTERVAL '1 hour'"))
                 .first()
-        )?.userId
+        )?.id
 
         if (!userId) {
             return
