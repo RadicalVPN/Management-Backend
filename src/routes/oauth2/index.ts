@@ -1,6 +1,6 @@
 import { Router } from "express"
+import app from "../.."
 import { OAuth2ClientFactory } from "../../modules/oauth/oauth2-factory"
-import app from "../../server"
 
 export default Router({ mergeParams: true })
     .post(

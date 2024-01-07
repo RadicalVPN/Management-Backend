@@ -1,5 +1,5 @@
 import { Router } from "express"
-import app from "../server"
+import app from ".."
 import authRouter from "./auth/index"
 import authInfoRouter from "./authInfo/index"
 import configurationRouter from "./configuration/index"

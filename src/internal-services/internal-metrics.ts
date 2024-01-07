@@ -1,17 +1,16 @@
 import express, { Express } from "express"
 import morgan from "morgan"
-import cluster from "node:cluster"
-import { AggregatorRegistry, collectDefaultMetrics } from "prom-client"
+import { Registry, collectDefaultMetrics } from "prom-client"
 import { GenericInternalService } from "./generic-internal-service"
 
 export class InternalMetrics extends GenericInternalService {
-    registry: AggregatorRegistry
+    registry: Registry
     app: Express
 
     constructor() {
         super()
 
-        this.registry = new AggregatorRegistry()
+        this.registry = new Registry()
         this.app = express()
 
         this.registerMiddlewares()
@@ -21,7 +20,7 @@ export class InternalMetrics extends GenericInternalService {
     start() {
         this.app.get("/cluster_metrics", async (req, res) => {
             res.set("Content-Type", this.registry.contentType)
-            res.end(await this.registry.clusterMetrics())
+            res.end(await this.registry.metrics())
         })
         this.app.listen(8082)
     }
@@ -31,9 +30,7 @@ export class InternalMetrics extends GenericInternalService {
     }
 
     private colletDefaultMetrics() {
-        if (cluster.isWorker) {
-            console.log("collecting default metrics")
-            collectDefaultMetrics()
-        }
+        console.log("collecting default metrics")
+        collectDefaultMetrics()
     }
 }

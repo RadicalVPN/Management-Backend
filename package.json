@@ -2,16 +2,13 @@
     "name": "radicalvpn_backend",
     "version": "0.0.1",
     "description": "The management Backend of the Radical VPN service",
-    "main": "index.js",
+    "main": "src/index.ts",
     "scripts": {
-        "start": "npx nodemon",
-        "build": "npx tsc && npm run copyBuildFolders",
-        "copyBuildFolders": "cp -r ./schemas ./build/schemas && cp -r ./templates ./build/templates && cp -r ./policy ./build/policy",
-        "format": "npx prettier . --check",
-        "format:fix": "npx prettier . --write",
-        "lint": "eslint . --ext .ts",
-        "lint:fix": "eslint --fix . --ext .ts",
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "start": "bun run --watch src/index.ts",
+        "format": "bunx prettier . --check",
+        "format:fix": "bunx prettier . --write",
+        "lint": "bunx eslint . --ext .ts",
+        "lint:fix": "bunx --fix . --ext .ts"
     },
     "author": "Johann",
     "license": "ISC",
