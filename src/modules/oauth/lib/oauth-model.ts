@@ -1,6 +1,6 @@
 import * as OAuth2Server from "@node-oauth/oauth2-server"
 import { validate as uuidValidate } from "uuid"
-import { db } from "../database"
+import { db } from "../../../database"
 
 export class OAuthModel implements OAuth2Server.AuthorizationCodeModel {
     async getAuthorizationCode(

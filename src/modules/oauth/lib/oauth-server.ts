@@ -1,7 +1,7 @@
 import * as OAuth2Server from "@node-oauth/oauth2-server"
 import OAuthServer, { Request, Response } from "@node-oauth/oauth2-server"
 import express from "express"
-import { UserFactory } from "../modules/user/user-factory"
+import { UserFactory } from "../../user/user-factory"
 
 interface IOAuthServerOptions extends OAuth2Server.ServerOptions {
     useErrorHandler?: boolean

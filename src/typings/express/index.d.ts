@@ -1,5 +1,5 @@
 import * as OAuth2Server from "@node-oauth/oauth2-server"
-import { OAuth } from "../../auth/oauth-server"
+import { OAuth } from "../../modules/oauth/lib/oauth-server"
 import { User } from "../../modules/user/user"
 
 declare global {
