@@ -111,7 +111,9 @@ const app = express()
     if (DockerProcessInspector.isDocker()) {
         console.log("Starting database migration")
 
-        console.log(await util.exec("npx knex migrate:latest --env production"))
+        console.log(
+            await util.exec("bunx knex migrate:latest --env production"),
+        )
     }
 
     await NodeAvailabilityChecker.startCheckInterval()
