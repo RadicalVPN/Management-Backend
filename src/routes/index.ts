@@ -1,5 +1,4 @@
 import { Router } from "express"
-import { authenticate } from "../middleware/authenticate"
 import app from "../server"
 import authRouter from "./auth/index"
 import authInfoRouter from "./authInfo/index"
@@ -22,7 +21,6 @@ export default Router({ mergeParams: true })
             })(req, res, next),
     )
     .get("/api/:version/me", authInfoRouter)
-    .use(authenticate)
     .use("/api/:version/internal", daemonRouter)
     .use("/api/:version/vpn", vpnRouter)
     .use("/api/:version/auth/totp", totpRouter)

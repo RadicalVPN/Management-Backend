@@ -8,6 +8,7 @@ import { OAuth } from "./auth/oauth-server"
 import { config } from "./config"
 import { PrometheusServiceDiscovery } from "./internal-services/prometheus-service-discovery"
 import { Metrics } from "./metrics"
+import { Bootstrap } from "./modules/auth/bootstrap"
 import { NodeFactory } from "./modules/nodes/node-factory"
 import { Redis } from "./modules/redis"
 import { ConfigManager } from "./modules/server/config-manager"
@@ -70,6 +71,8 @@ const app = express()
     app.use(expressSession(sessionConfig))
 
     app.use(morgan("dev"))
+
+    app.use(Bootstrap.middleware)
 
     app.oauth = new OAuth({
         model: new OAuthModel(),

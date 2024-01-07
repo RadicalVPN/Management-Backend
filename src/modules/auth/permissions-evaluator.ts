@@ -17,6 +17,8 @@ export class PermissionsEvaluator {
                 PermissionsEvaluator.model,
                 PermissionsEvaluator.policy,
             )
+
+            PermissionsEvaluator.configureEnforcer()
         }
 
         return this
@@ -41,5 +43,9 @@ export class PermissionsEvaluator {
 
     async evaluateAnonymous(obj: string, act: string) {
         return await this.evaluate(["anonymous"], obj, act)
+    }
+
+    private static configureEnforcer() {
+        PermissionsEvaluator.enforcer.enableLog(true)
     }
 }
