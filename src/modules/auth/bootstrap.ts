@@ -13,7 +13,7 @@ export class Bootstrap {
             const scopes = req.session.userInfo?.scopes
             if (!scopes) {
                 console.warn("user has no scopes in userInfo", req.session)
-                return res.status(401).send()
+                return Bootstrap.rejectUnauthorized(res)
             }
 
             //user locked / disabled?
@@ -22,11 +22,11 @@ export class Bootstrap {
             }
 
             if (!(await permissionsEvaluator.evaluate(scopes, obj, act))) {
-                return res.status(401).send()
+                return Bootstrap.rejectUnauthorized(res)
             }
         } else {
             if (!(await permissionsEvaluator.evaluateAnonymous(obj, act))) {
-                return res.status(401).send()
+                return Bootstrap.rejectUnauthorized(res)
             }
         }
 
@@ -49,5 +49,9 @@ export class Bootstrap {
                 userInfo.id,
             )) as User
         }
+    }
+
+    private static rejectUnauthorized(res: Response) {
+        return res.status(401).send()
     }
 }
