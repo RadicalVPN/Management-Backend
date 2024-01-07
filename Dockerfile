@@ -1,9 +1,10 @@
-FROM oven/bun:alpine
+FROM oven/bun:debian
 
 COPY . .
 
 # install wireguard packages
-RUN apk add wireguard-tools-wg-quick
+RUN apt update
+RUN apt install -y wireguard-tools
 
 RUN bun install --production
 CMD [ "bun", "run", "src/index.ts" ]
