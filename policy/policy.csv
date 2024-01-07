@@ -1,0 +1,33 @@
+g, admin, user
+g, vpn:create, user
+
+p, user, /api/1.0/auth, (GET)|(DELETE)
+p, anonymous, /api/1.0/auth, POST
+p, anonymous, /api/1.0/auth/register, POST
+p, anonymous, /api/1.0/auth/verify/:verifyToken, GET
+
+p, anonymous, /api/1.0/configuration/cloudflare/turnstile, GET
+
+p, vpn:create, /api/1.0/internal/dynamic_vpn, PUT
+p, user, /api/1.0/internal/privacy_firewall, GET
+
+p, user, /api/1.0/vpn, GET
+p, vpn:create, /api/1.0/vpn, PUT
+p, user, /api/1.0/vpn/:id, (GET)|(DELETE)
+p, user, /api/1.0/vpn/:id/qrcode, GET
+p, user, /api/1.0/vpn/:id/toggle, POST
+p, user, /api/1.0/vpn/:id/config, GET
+p, user, /api/1.0/vpn/prometheus/metrics, GET
+p, user, /api/1.0/vpn/prometheus/metrics/day, GET
+
+p, user, /api/1.0/auth/totp/qrcode, GET
+p, user, /api/1.0/auth/totp/verify, GET
+p, user, /api/1.0/auth/totp, DELETE
+
+p, user, /api/1.0/server, GET
+
+p, user, /api/1.0/user/username, PUT
+p, user, /api/1.0/user/password, PUT
+
+p, user, /api/1.0/oauth2/client/:clientId, GET
+p, user, /api/1.0/oauth2/token, POST
