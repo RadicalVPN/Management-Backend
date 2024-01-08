@@ -1,5 +1,3 @@
-import axios from "axios"
-import querystring from "querystring"
 import { config } from "../config"
 
 interface IChallengeData {
@@ -30,15 +28,20 @@ export class CloudflareTurnstile {
 
     private async fetchChallengeData(): Promise<IChallengeData> {
         try {
-            return (
-                await axios.post(
-                    "https://challenges.cloudflare.com/turnstile/v0/siteverify",
-                    querystring.stringify({
-                        secret: config.ClOUDFLARE.TURNSTILE.SECRET_KEY,
-                        response: this.challengeId,
-                    }),
-                )
-            ).data
+            const url = new URL(
+                "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+            )
+            url.searchParams.set(
+                "secret",
+                config.ClOUDFLARE.TURNSTILE.SECRET_KEY,
+            )
+            url.searchParams.set("response", this.challengeId)
+
+            const res = await fetch(url, {
+                method: "POST",
+            })
+
+            return await res.json()
         } catch (e) {
             console.error(e)
             return {

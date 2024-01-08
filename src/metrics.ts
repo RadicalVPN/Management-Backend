@@ -1,4 +1,3 @@
-import axios from "axios"
 import express, { Express } from "express"
 import morgan from "morgan"
 import { config } from "./config"
@@ -82,19 +81,22 @@ export class Metrics {
         start: number,
         end: number,
     ) {
-        const data = (
-            await axios.get(
-                `http://${config.PROMETHEUS.HOST}/api/v1/query_range`,
-                {
-                    params: {
-                        query,
-                        start,
-                        end,
-                        step: 10,
-                    },
-                },
-            )
-        ).data
+        const url = new URL(
+            `http://${config.PROMETHEUS.HOST}/api/v1/query_range`,
+        )
+
+        url.searchParams.append("query", query)
+        url.searchParams.append("start", start.toString())
+        url.searchParams.append("end", end.toString())
+        url.searchParams.append("step", "10")
+
+        const res = await fetch(url, {
+            method: "GET",
+            headers: {
+                Accept: "application/json",
+            },
+        })
+        const data = await res.json()
 
         if (data.data.result.length === 0) {
             return []

@@ -1,4 +1,3 @@
-import axios from "axios"
 import RedisStore from "connect-redis"
 import express from "express"
 import expressSession from "express-session"
@@ -24,9 +23,6 @@ import * as util from "./util"
 const app = express()
 ;(async () => {
     console.log("starting radical vpn backend server")
-
-    //workaround until bun supports zlib brotli compression
-    axios.defaults.headers.common["Accept-Encoding"] = "gzip"
 
     try {
         const wgVersion = (await util.exec("wg --version")).split(" ")[1]
