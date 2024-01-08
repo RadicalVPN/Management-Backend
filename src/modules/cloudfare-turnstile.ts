@@ -1,4 +1,3 @@
-import querystring from "querystring"
 import { config } from "../config"
 
 interface IChallengeData {
@@ -29,17 +28,19 @@ export class CloudflareTurnstile {
 
     private async fetchChallengeData(): Promise<IChallengeData> {
         try {
-            const url = new URL(
+            const res = await fetch(
                 "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+                {
+                    method: "POST",
+                    body: JSON.stringify({
+                        secret: config.ClOUDFLARE.TURNSTILE.SECRET_KEY,
+                        response: this.challengeId,
+                    }),
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                },
             )
-
-            const res = await fetch(url, {
-                method: "POST",
-                body: querystring.stringify({
-                    secret: config.ClOUDFLARE.TURNSTILE.SECRET_KEY,
-                    response: this.challengeId,
-                }),
-            })
 
             return await res.json()
         } catch (e) {
