@@ -1,3 +1,4 @@
+import querystring from "querystring"
 import { config } from "../config"
 
 interface IChallengeData {
@@ -31,14 +32,13 @@ export class CloudflareTurnstile {
             const url = new URL(
                 "https://challenges.cloudflare.com/turnstile/v0/siteverify",
             )
-            url.searchParams.set(
-                "secret",
-                config.ClOUDFLARE.TURNSTILE.SECRET_KEY,
-            )
-            url.searchParams.set("response", this.challengeId)
 
             const res = await fetch(url, {
                 method: "POST",
+                body: querystring.stringify({
+                    secret: config.ClOUDFLARE.TURNSTILE.SECRET_KEY,
+                    response: this.challengeId,
+                }),
             })
 
             return await res.json()
