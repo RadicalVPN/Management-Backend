@@ -1,4 +1,6 @@
 import { server } from "@passwordless-id/webauthn"
+import { RegistrationParsed } from "@passwordless-id/webauthn/dist/esm/types"
+import { db } from "../../../database"
 import { User } from "../../user/user"
 import { WebAuthnChallengeHelper } from "./webauth-challenge-helper"
 
@@ -16,9 +18,7 @@ export class WebAuthn extends WebAuthnChallengeHelper {
                 origin,
             })
 
-            console.log(result)
-
-            //TODO: store credential into db
+            await this.storeCredential(result)
 
             return {
                 success: true,
@@ -37,5 +37,19 @@ export class WebAuthn extends WebAuthnChallengeHelper {
                         : e.message,
             }
         }
+    }
+
+    private async storeCredential(
+        registration: RegistrationParsed,
+    ): Promise<void> {
+        await db.table("users_webauth_credentials").insert({
+            userId: this.user.userData.id,
+            authenticatorName:
+                registration.authenticator.name ?? "Unknown Name",
+            credentialId: registration.credential.id,
+            credentialPublicKey: registration.credential.publicKey,
+            credentialAlgorithm: registration.credential.algorithm,
+            lastUsage: new Date(null as any), //1970
+        })
     }
 }
