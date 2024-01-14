@@ -12,7 +12,7 @@ export class WebAuthn extends WebAuthnChallengeHelper {
 
         try {
             const result = await server.verifyRegistration(registration, {
-                challenge: this.getLastChallenge,
+                challenge: await this.getLastChallenge(),
                 origin,
             })
 
@@ -23,7 +23,7 @@ export class WebAuthn extends WebAuthnChallengeHelper {
             return {
                 success: true,
             }
-        } catch (e) {
+        } catch (e: any) {
             console.error("webauthn setup failed", {
                 error: e,
                 user: this.user.userData.id,
@@ -31,6 +31,10 @@ export class WebAuthn extends WebAuthnChallengeHelper {
 
             return {
                 success: false,
+                message:
+                    e instanceof TypeError
+                        ? "Unknown internal error"
+                        : e.message,
             }
         }
     }
