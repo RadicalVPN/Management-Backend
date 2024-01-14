@@ -31,3 +31,6 @@ p, user, /api/1.0/user/password, PUT
 
 p, user, /api/1.0/oauth2/client/:clientId, GET
 p, user, /api/1.0/oauth2/token, POST
+
+p, user, /api/1.0/user/webauthn/challenge, GET
+p, user, /api/1.0/user/webauthn/verify, PUT

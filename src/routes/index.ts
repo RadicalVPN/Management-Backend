@@ -8,6 +8,7 @@ import oauth2Router from "./oauth2/index"
 import serverRouter from "./server/index"
 import totpRouter from "./totp/index"
 import userRouter from "./user/index"
+import webAuthnRouter from "./user/webauthn"
 import vpnRouter from "./vpn/index"
 
 export default Router({ mergeParams: true })
@@ -25,4 +26,4 @@ export default Router({ mergeParams: true })
     .use("/api/:version/vpn", vpnRouter)
     .use("/api/:version/auth/totp", totpRouter)
     .use("/api/:version/server", serverRouter)
-    .use("/api/:version/user", userRouter)
+    .use("/api/:version/user", userRouter, webAuthnRouter)
