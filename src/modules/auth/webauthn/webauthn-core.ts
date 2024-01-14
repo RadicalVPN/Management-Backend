@@ -23,7 +23,12 @@ export class WebAuthn extends WebAuthnChallengeHelper {
             return {
                 success: true,
             }
-        } catch {
+        } catch (e) {
+            console.error("webauthn setup failed", {
+                error: e,
+                user: this.user.userData.id,
+            })
+
             return {
                 success: false,
             }
