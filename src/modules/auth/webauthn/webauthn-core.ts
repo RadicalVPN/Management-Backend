@@ -49,6 +49,7 @@ export class WebAuthn extends WebAuthnChallengeHelper {
                     "credentialPublicKey AS publicKey",
                     "credentialAlgorithm AS algorithm",
                 )
+                .where("credentialId", authentification.credentialId)
                 .first()
 
             if (!credentialKey) {
