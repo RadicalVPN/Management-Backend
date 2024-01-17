@@ -35,13 +35,53 @@ export class WebAuthn extends WebAuthnChallengeHelper {
                 user: this.user!.userData.id,
             })
 
-            return {
-                success: false,
-                message:
-                    e instanceof TypeError
-                        ? "Unknown internal error"
-                        : e.message,
+            return this.handleException(e)
+        }
+    }
+
+    async verifyAuthentification(authentification: any) {
+        try {
+            const challenge = await this.getLastChallenge()
+            const credentialKey = await db
+                .table("users_webauth_credentials")
+                .select(
+                    "credentialId AS id",
+                    "credentialPublicKey AS publicKey",
+                    "credentialAlgorithm AS algorithm",
+                )
+                .first()
+
+            if (!credentialKey) {
+                return {
+                    success: false,
+                    message: "No credential found",
+                }
             }
+
+            await server.verifyAuthentication(authentification, credentialKey, {
+                challenge: challenge,
+                origin: this.origin,
+                userVerified: true,
+            })
+
+            return {
+                success: true,
+            }
+        } catch (e) {
+            console.error("webauthn authentification failed", {
+                error: e,
+                session: this.session.id,
+            })
+
+            return this.handleException(e)
+        }
+    }
+
+    private handleException(e: any) {
+        return {
+            success: false,
+            message:
+                e instanceof TypeError ? "Unknown internal error" : e.message,
         }
     }
 

@@ -6,6 +6,7 @@ p, anonymous, /api/1.0/auth, POST
 p, anonymous, /api/1.0/auth/register, POST
 p, anonymous, /api/1.0/auth/verify/:verifyToken, GET
 p, anonymous, /api/1.0/auth/webauthn/challenge, GET
+p, anonymous, /api/1.0/auth/webauthn/login, PUT
 
 p, anonymous, /api/1.0/configuration/cloudflare/turnstile, GET
 
