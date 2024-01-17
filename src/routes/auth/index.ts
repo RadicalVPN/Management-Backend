@@ -7,6 +7,8 @@ import { JSONSchemaValidator } from "../../schema-validator"
 
 export default Router({ mergeParams: true })
     .post("/", async (req, res, next) => {
+        const session = new Session()
+
         if (req.session?.authed === true) {
             return res.status(400).send("already authenticated")
         }
@@ -62,19 +64,12 @@ export default Router({ mergeParams: true })
 
         if (data.rememberMe === true) {
             // set session to 30 days
-            await new Session().regenerate(req, 30 * 24 * 60 * 60 * 1000)
+            await session.regenerate(req, 30 * 24 * 60 * 60 * 1000)
         } else {
-            await new Session().regenerate(req)
+            await session.regenerate(req)
         }
 
-        req.session.authed = true
-        req.session.userInfo = {
-            active: realUser.userData.active == 1,
-            email: realUser.userData.email,
-            username: realUser.userData.username,
-            id: realUser.userData.id,
-            scopes: realUser.userData.scopes,
-        }
+        session.prepareUserSession(req, realUser)
 
         res.status(200).send()
     })

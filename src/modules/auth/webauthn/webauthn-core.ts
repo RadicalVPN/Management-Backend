@@ -5,6 +5,11 @@ import { User } from "../../user/user"
 import { WebAuthnChallengeHelper } from "./webauth-challenge-helper"
 
 export type TExpressSession = Express.Request["session"]
+interface IAuthenticationResponse {
+    success: boolean
+    message?: string
+    userId?: string
+}
 
 export class WebAuthn extends WebAuthnChallengeHelper {
     private origin: string
@@ -39,7 +44,9 @@ export class WebAuthn extends WebAuthnChallengeHelper {
         }
     }
 
-    async verifyAuthentification(authentification: any) {
+    async verifyAuthentification(
+        authentification: any,
+    ): Promise<IAuthenticationResponse> {
         try {
             const challenge = await this.getLastChallenge()
             const credentialKey = await db
@@ -48,6 +55,7 @@ export class WebAuthn extends WebAuthnChallengeHelper {
                     "credentialId AS id",
                     "credentialPublicKey AS publicKey",
                     "credentialAlgorithm AS algorithm",
+                    "userId",
                 )
                 .where("credentialId", authentification.credentialId)
                 .first()
@@ -67,6 +75,7 @@ export class WebAuthn extends WebAuthnChallengeHelper {
 
             return {
                 success: true,
+                userId: credentialKey.userId,
             }
         } catch (e) {
             console.error("webauthn authentification failed", {

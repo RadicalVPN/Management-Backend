@@ -1,5 +1,6 @@
 import { Request } from "express"
 import { Redis } from "./redis"
+import { User } from "./user/user"
 
 export class Session {
     regenerate(req: Request, maxAge?: number): Promise<void> {
@@ -16,6 +17,17 @@ export class Session {
                 resolve()
             })
         })
+    }
+
+    prepareUserSession(req: Request, user: User) {
+        req.session.authed = true
+        req.session.userInfo = {
+            active: user.userData.active == 1,
+            email: user.userData.email,
+            username: user.userData.username,
+            id: user.userData.id,
+            scopes: user.userData.scopes,
+        }
     }
 
     async invalidateAllUserSessions(
