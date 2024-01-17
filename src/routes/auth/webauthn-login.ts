@@ -11,10 +11,12 @@ export default Router({ mergeParams: true })
         })
     })
     .put("/webauthn/login", async (req, res, next) => {
-        const webauthn = new WebAuthn(req.session)
-        const challenge = await webauthn.generateChallenge()
+        const webauthn = new WebAuthn(req.session, req.locals.user)
 
-        res.send({
-            challenge: challenge,
-        })
+        const result = await webauthn.verifyAuthentification(req.body)
+        if (!result.success) {
+            res.status(400).send(result)
+        }
+
+        res.send()
     })
