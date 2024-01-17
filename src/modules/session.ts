@@ -2,14 +2,17 @@ import { Request } from "express"
 import { Redis } from "./redis"
 
 export class Session {
-    regenerate(maxAge: number, req: Request): Promise<void> {
+    regenerate(req: Request, maxAge?: number): Promise<void> {
         return new Promise<void>((resolve, reject) => {
             req.session.regenerate((err) => {
                 if (err) {
                     return reject(err)
                 }
 
-                req.session.cookie.maxAge = maxAge
+                if (maxAge) {
+                    req.session.cookie.maxAge = maxAge
+                }
+
                 resolve()
             })
         })

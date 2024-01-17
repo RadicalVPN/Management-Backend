@@ -62,7 +62,9 @@ export default Router({ mergeParams: true })
 
         if (data.rememberMe === true) {
             // set session to 30 days
-            await new Session().regenerate(30 * 24 * 60 * 60 * 1000, req)
+            await new Session().regenerate(req, 30 * 24 * 60 * 60 * 1000)
+        } else {
+            await new Session().regenerate(req)
         }
 
         req.session.authed = true
