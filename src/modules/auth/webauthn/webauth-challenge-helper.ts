@@ -1,12 +1,12 @@
 import { randomUUID } from "crypto"
 import { Redis } from "../../redis"
-import { User } from "../../user/user"
+import { TExpressSession } from "./webauthn-core"
 
 export class WebAuthnChallengeHelper {
-    user: User
+    session: TExpressSession
 
-    constructor(user: User) {
-        this.user = user
+    constructor(session: TExpressSession) {
+        this.session = session
     }
 
     async generateChallenge(): Promise<string> {
@@ -32,6 +32,6 @@ export class WebAuthnChallengeHelper {
     }
 
     private getCacheKey() {
-        return `webauthn:${this.user.userData.id}`
+        return `webauthn:${this.session.id}`
     }
 }

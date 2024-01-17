@@ -4,18 +4,24 @@ import { db } from "../../../database"
 import { User } from "../../user/user"
 import { WebAuthnChallengeHelper } from "./webauth-challenge-helper"
 
+export type TExpressSession = Express.Request["session"]
+
 export class WebAuthn extends WebAuthnChallengeHelper {
-    constructor(user: User) {
-        super(user)
+    private origin: string
+    private user: User
+
+    constructor(user: User, session: TExpressSession) {
+        super(session)
+
+        this.origin = "https://radicalvpn.com"
+        this.user = user
     }
 
-    async verifyChallenge(registration: any) {
-        const origin = "https://radicalvpn.com"
-
+    async verifyRegistration(registration: any) {
         try {
             const result = await server.verifyRegistration(registration, {
                 challenge: await this.getLastChallenge(),
-                origin,
+                origin: this.origin,
             })
 
             await this.storeCredential(result)

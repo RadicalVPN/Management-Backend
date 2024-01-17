@@ -12,7 +12,7 @@ export default Router({ mergeParams: true })
     .put("/webauthn/verify", async (req, res, next) => {
         const webauthn = new WebAuthn(req.locals.user)
 
-        const result = await webauthn.verifyChallenge(req.body)
+        const result = await webauthn.verifyRegistration(req.body)
 
         if (result.success) {
             res.send(result)

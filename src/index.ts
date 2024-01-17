@@ -46,7 +46,7 @@ const app = express()
         secret: config.SERVER.SESSION_SECRET,
         name: "RADICAL_SESSION_ID",
         resave: false,
-        saveUninitialized: false,
+        saveUninitialized: true,
         cookie: {
             secure: config.SERVER.NODE_ENV === "production",
         },
