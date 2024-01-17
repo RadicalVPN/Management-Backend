@@ -8,9 +8,9 @@ export type TExpressSession = Express.Request["session"]
 
 export class WebAuthn extends WebAuthnChallengeHelper {
     private origin: string
-    private user: User
+    private user?: User
 
-    constructor(user: User, session: TExpressSession) {
+    constructor(session: TExpressSession, user?: User) {
         super(session)
 
         this.origin = "https://radicalvpn.com"
@@ -32,7 +32,7 @@ export class WebAuthn extends WebAuthnChallengeHelper {
         } catch (e: any) {
             console.error("webauthn setup failed", {
                 error: e,
-                user: this.user.userData.id,
+                user: this.user!.userData.id,
             })
 
             return {
@@ -49,7 +49,7 @@ export class WebAuthn extends WebAuthnChallengeHelper {
         registration: RegistrationParsed,
     ): Promise<void> {
         await db.table("users_webauth_credentials").insert({
-            userId: this.user.userData.id,
+            userId: this.user!.userData.id,
             authenticatorName:
                 registration.authenticator.name ?? "Unknown Name",
             credentialId: registration.credential.id,
