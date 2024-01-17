@@ -11,7 +11,7 @@ export default Router({ mergeParams: true })
         })
     })
     .put("/webauthn/login", async (req, res, next) => {
-        const webauthn = new WebAuthn(req.session, req.locals.user)
+        const webauthn = new WebAuthn(req.session)
 
         const result = await webauthn.verifyAuthentification(req.body)
         if (!result.success) {
