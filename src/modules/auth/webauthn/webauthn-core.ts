@@ -1,5 +1,4 @@
 import { server } from "@passwordless-id/webauthn"
-import { db } from "../../../database"
 import { PasskeyFactory } from "../../passkeys/passkey-factory"
 import { User } from "../../user/user"
 import { WebAuthnChallengeHelper } from "./webauth-challenge-helper"
@@ -49,33 +48,37 @@ export class WebAuthn extends WebAuthnChallengeHelper {
     ): Promise<IAuthenticationResponse> {
         try {
             const challenge = await this.getLastChallenge()
-            const credentialKey = await db
-                .table("users_webauth_credentials")
-                .select(
-                    "credentialId AS id",
-                    "credentialPublicKey AS publicKey",
-                    "credentialAlgorithm AS algorithm",
-                    "userId",
-                )
-                .where("credentialId", authentification.credentialId)
-                .first()
 
-            if (!credentialKey) {
+            const passkey = await PasskeyFactory.getByCredentialId(
+                authentification.credentialId,
+            )
+
+            if (!passkey) {
                 return {
                     success: false,
                     message: "No credential found",
                 }
             }
 
-            await server.verifyAuthentication(authentification, credentialKey, {
-                challenge: challenge,
-                origin: this.origin,
-                userVerified: true,
-            })
+            await server.verifyAuthentication(
+                authentification,
+                {
+                    id: passkey.data.credentialId,
+                    publicKey: passkey.data.credentialPublicKey,
+                    algorithm: passkey.data.credentialAlgorithm,
+                },
+                {
+                    challenge: challenge,
+                    origin: this.origin,
+                    userVerified: true,
+                },
+            )
+
+            await passkey.updateLastUsage()
 
             return {
                 success: true,
-                userId: credentialKey.userId,
+                userId: passkey.data.userId,
             }
         } catch (e) {
             console.error("webauthn authentification failed", {

@@ -21,6 +21,27 @@ export class PasskeyFactory extends User {
         return data.map((_data) => new Passkey(_data))
     }
 
+    async get(id: string) {
+        const data = await db
+            .table("users_webauth_credentials")
+            .select("*")
+            .where("id", id)
+            .where("userId", this.userData.id)
+            .first()
+
+        return data ? new Passkey(data) : null
+    }
+
+    static async getByCredentialId(credentialId: string) {
+        const data = await db
+            .table("users_webauth_credentials")
+            .select("*")
+            .where("credentialId", credentialId)
+            .first()
+
+        return data ? new Passkey(data) : null
+    }
+
     async add(registration: RegistrationParsed) {
         await db.table("users_webauth_credentials").insert({
             userId: this.user.id,

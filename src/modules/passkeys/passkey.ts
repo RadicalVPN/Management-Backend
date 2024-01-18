@@ -6,7 +6,7 @@ export interface PasskeyData {
     authenticatorName: string
     credentialId: string
     credentialPublicKey: string
-    credentialAlgorithm: string
+    credentialAlgorithm: "RS256" | "ES256"
     lastUsage: string
     createdAt: string
     updatedAt: string
