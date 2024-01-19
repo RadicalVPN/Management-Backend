@@ -18,7 +18,7 @@ export default Router({ mergeParams: true })
 
         const result = await webauthn.verifyAuthentification(req.body)
         if (!result.success) {
-            res.status(400).send(result)
+            return res.status(400).send(result)
         }
 
         const user = await new UserFactory().findUserById(result.userId!)
