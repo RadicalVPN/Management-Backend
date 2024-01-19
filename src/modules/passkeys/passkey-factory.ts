@@ -53,4 +53,20 @@ export class PasskeyFactory extends User {
             lastUsage: new Date(null as any), //1970
         })
     }
+
+    async delete(id: string): Promise<boolean> {
+        const passkey = await this.get(id)
+
+        if (!passkey) {
+            return false
+        }
+
+        await db
+            .table("users_webauth_credentials")
+            .delete()
+            .where("id", id)
+            .where("userId", this.userData.id)
+
+        return true
+    }
 }

@@ -38,5 +38,5 @@ p, user, /api/1.0/user/webauthn/challenge, GET
 p, user, /api/1.0/user/webauthn/verify, PUT
 
 p, user, /api/1.0/passkey, GET
-
+p, user, /api/1.0/passkey/:id, DELETE
 
