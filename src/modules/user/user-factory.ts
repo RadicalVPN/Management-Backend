@@ -64,7 +64,7 @@ export class UserFactory {
             },
             {
                 userId,
-                scopeName: await Scopes.getScopeIdByName("vpn:create"),
+                scopeId: await Scopes.getScopeIdByName("vpn:create"),
             },
         ])
     }
