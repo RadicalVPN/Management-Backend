@@ -1,4 +1,5 @@
 import { db } from "../../database"
+import { Scopes } from "./scopes"
 import { User } from "./user"
 
 export class UserCreationError extends Error {}
@@ -7,11 +8,10 @@ export class UserFactory {
         const data = await db
             .table("users")
             .join("users_scopes", "users_scopes.userId", "users.id")
+            .join("scopes", "scopes.id", "users_scopes.scopeId")
             .select(
                 "users.*",
-                db.raw(
-                    "string_agg(users_scopes.\"scopeName\", ',') as aggregatedscopes",
-                ),
+                db.raw("string_agg(scopes.\"name\", ',') as aggregatedscopes"),
             )
             .groupBy("users.id")
 
@@ -22,11 +22,10 @@ export class UserFactory {
         const data = await db
             .table("users")
             .join("users_scopes", "users_scopes.userId", "users.id")
+            .join("scopes", "scopes.id", "users_scopes.scopeId")
             .select(
                 "users.*",
-                db.raw(
-                    "string_agg(users_scopes.\"scopeName\", ',') as aggregatedscopes",
-                ),
+                db.raw("string_agg(scopes.\"name\", ',') as aggregatedscopes"),
             )
             .where("users.id", userId)
             .groupBy("users.id")
@@ -55,6 +54,19 @@ export class UserFactory {
             passwordHash: await Bun.password.hash(password),
             active: true,
         })
+
+        //add initial scopes
+        const userId = (await this.findUserByEmail(email))?.userData.id
+        await db.table("users_scopes").insert([
+            {
+                userId,
+                scopeId: await Scopes.getScopeIdByName("user"),
+            },
+            {
+                userId,
+                scopeName: await Scopes.getScopeIdByName("vpn:create"),
+            },
+        ])
     }
 
     async authenticate(email: string, password: string): Promise<boolean> {

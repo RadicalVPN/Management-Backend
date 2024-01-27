@@ -48,9 +48,7 @@ export default Router({ mergeParams: true })
         const totpRequired = await realUser.isTotpEnabled()
         if (totpRequired && !totpToken) {
             return res.status(401).send("totp required")
-        }
-
-        if (totpRequired && totpToken) {
+        } else if (totpRequired && totpToken) {
             if (totp(await realUser.generateTotpSecret()) !== totpToken) {
                 return res.status(401).send("invalid totp token")
             }
