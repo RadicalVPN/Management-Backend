@@ -1,5 +1,4 @@
 import { db } from "../../database"
-import { CommonHashing } from "../common/hashing"
 import { User } from "./user"
 
 export class UserCreationError extends Error {}
@@ -50,13 +49,10 @@ export class UserFactory {
             )
         }
 
-        const hashData = await CommonHashing.hashString(password)
-
         await db.table("users").insert({
             username,
             email,
-            passwordHash: hashData.hash,
-            passwordSalt: hashData.salt,
+            passwordHash: await Bun.password.hash(password),
             active: true,
         })
     }
@@ -67,12 +63,7 @@ export class UserFactory {
             return false
         }
 
-        const hash = await CommonHashing.generatePbkfs2Hash(
-            Buffer.from(password),
-            Buffer.from(user.userData.passwordSalt, "hex"),
-        )
-
-        return hash.toString("hex") === user.userData.passwordHash
+        return await Bun.password.verify(password, user.userData.passwordHash)
     }
 
     async findUserByEmail(email: string): Promise<User | undefined> {

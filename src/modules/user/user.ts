@@ -2,7 +2,6 @@ import crypto, { randomUUID } from "crypto"
 import { db } from "../../database"
 import { Base32 } from "../base32"
 import { EmailQueueManager } from "../common/email/email-queue-manager"
-import { CommonHashing } from "../common/hashing"
 import { UserError } from "../common/user-error"
 import { Redis } from "../redis"
 
@@ -11,7 +10,6 @@ export interface UserData {
     username: string
     email: string
     passwordHash: string
-    passwordSalt: string
     active: number
     createdAt: string
     updatedAt: string
@@ -132,13 +130,10 @@ export class User {
     }
 
     async updatePassword(password: string) {
-        const hashData = await CommonHashing.hashString(password)
-
         await db
             .table("users")
             .update({
-                passwordHash: hashData.hash,
-                passwordSalt: hashData.salt,
+                passwordHash: await Bun.password.hash(password),
             })
             .where("id", this.userData.id)
     }
