@@ -7,8 +7,8 @@ export class UserFactory {
     async getAll() {
         const data = await db
             .table("users")
-            .join("users_scopes", "users_scopes.userId", "users.id")
-            .join("scopes", "scopes.id", "users_scopes.scopeId")
+            .leftJoin("users_scopes", "users_scopes.userId", "users.id")
+            .leftJoin("scopes", "scopes.id", "users_scopes.scopeId")
             .select(
                 "users.*",
                 db.raw("string_agg(scopes.\"name\", ',') as aggregatedscopes"),
@@ -21,8 +21,8 @@ export class UserFactory {
     async findUserById(userId: string): Promise<User | undefined> {
         const data = await db
             .table("users")
-            .join("users_scopes", "users_scopes.userId", "users.id")
-            .join("scopes", "scopes.id", "users_scopes.scopeId")
+            .leftJoin("users_scopes", "users_scopes.userId", "users.id")
+            .leftJoin("scopes", "scopes.id", "users_scopes.scopeId")
             .select(
                 "users.*",
                 db.raw("string_agg(scopes.\"name\", ',') as aggregatedscopes"),
@@ -56,17 +56,25 @@ export class UserFactory {
         })
 
         //add initial scopes
-        const userId = (await this.findUserByEmail(email))?.userData.id
-        await db.table("users_scopes").insert([
-            {
-                userId,
-                scopeId: await Scopes.getScopeIdByName("user"),
-            },
-            {
-                userId,
-                scopeId: await Scopes.getScopeIdByName("vpn:create"),
-            },
-        ])
+        const user = await this.findUserByEmail(email)
+
+        if (user) {
+            const userId = user.userData.id
+
+            const scopes = [
+                await Scopes.getScopeIdByName("user"),
+                await Scopes.getScopeIdByName("vpn:create"),
+            ]
+
+            await db.table("users_scopes").insert(
+                scopes.map((scopeId) => ({
+                    scopeId,
+                    userId,
+                })),
+            )
+
+            await user.generateVerificationCode()
+        }
     }
 
     async authenticate(email: string, password: string): Promise<boolean> {
@@ -109,14 +117,12 @@ export class UserFactory {
     async findUserByVerifyToken(
         verifyToken: string,
     ): Promise<User | undefined> {
-        const userId = (
-            await db
-                .table("users_verify")
-                .select("id")
-                .where("verifyToken", verifyToken)
-                .where("createdAt", ">", db.raw("NOW() - INTERVAL '1 hour'"))
-                .first()
-        )?.id
+        const { userId } = await db
+            .table("users_verify")
+            .select("userId")
+            .where("verifyToken", verifyToken)
+            .where("createdAt", ">", db.raw("NOW() - INTERVAL '1 hour'"))
+            .first()
 
         if (!userId) {
             return

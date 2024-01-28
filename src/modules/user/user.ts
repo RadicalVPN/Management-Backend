@@ -23,7 +23,10 @@ export class User {
 
     constructor(data: UserData) {
         this.userData = data
-        this.userData.scopes = data.aggregatedscopes.split(",")
+        this.userData.scopes =
+            typeof data.aggregatedscopes === "string"
+                ? data?.aggregatedscopes.split(",")
+                : []
     }
 
     async confirmTotp() {

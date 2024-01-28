@@ -98,10 +98,12 @@ export default Router({ mergeParams: true })
             return res.status(401).send("turnstile challenge failed")
         }
 
-        const userFactory = new UserFactory()
-
         try {
-            await userFactory.add(data.username, data.email, data.password)
+            await new UserFactory().add(
+                data.username,
+                data.email,
+                data.password,
+            )
         } catch (err) {
             if (err instanceof UserCreationError) {
                 return res.status(400).send({
@@ -113,9 +115,6 @@ export default Router({ mergeParams: true })
                 return res.status(500).send("internal server error")
             }
         }
-
-        const user = await userFactory.findUserByEmail(data.email)
-        await user?.generateVerificationCode()
 
         res.send()
     })
