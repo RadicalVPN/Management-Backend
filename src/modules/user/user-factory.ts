@@ -57,10 +57,7 @@ export class UserFactory {
 
         //add initial scopes
         const user = await this.findUserByEmail(email)
-
         if (user) {
-            const userId = user.userData.id
-
             const scopes = [
                 await Scopes.getScopeIdByName("user"),
                 await Scopes.getScopeIdByName("vpn:create"),
@@ -69,7 +66,7 @@ export class UserFactory {
             await db.table("users_scopes").insert(
                 scopes.map((scopeId) => ({
                     scopeId,
-                    userId,
+                    userId: user.userData.id,
                 })),
             )
 
