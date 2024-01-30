@@ -17,6 +17,11 @@ export class VpnPublishQueue {
     async publish(config: string) {
         await (
             await Redis.getInstance()
-        ).rPush(`vpn_manager:publish_queue:${this.getNodeHostName()}`, config)
+        ).rPush(
+            `vpn_manager:publish_queue:${this.getNodeHostName()}`,
+            JSON.stringify({
+                config,
+            }),
+        )
     }
 }
