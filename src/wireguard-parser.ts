@@ -13,6 +13,10 @@ export class WireguardParser {
             vpnStatKeys.push(key)
         }
 
+        if (vpnStatKeys.length === 0) {
+            return []
+        }
+
         const data = await redis.json.mGet(vpnStatKeys, "$[*]")
 
         //@ts-ignore
