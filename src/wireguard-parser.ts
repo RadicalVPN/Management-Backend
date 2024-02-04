@@ -8,7 +8,7 @@ export class WireguardParser {
         const vpnStatKeys = []
         for await (const key of redis.scanIterator({
             MATCH: "vpn_stats:*",
-            COUNT: 100,
+            COUNT: 1000,
         })) {
             vpnStatKeys.push(key)
         }
