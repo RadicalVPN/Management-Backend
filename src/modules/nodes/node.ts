@@ -1,3 +1,4 @@
+import { Redis } from "../redis"
 import { NodeAvailabilityChecker } from "./node-availability-check"
 import { VpnNode } from "./node-factory"
 
@@ -22,6 +23,20 @@ export class Node {
             public_key: this.data.public_key,
             location: this.data.node_location,
             online: await NodeAvailabilityChecker.isNodeActive(this),
+            load: await this.getCurrentLoadFromRedis(),
         }
+    }
+
+    async getCurrentLoadFromRedis() {
+        const redis = await Redis.getInstance()
+        const data = await redis.get(
+            `server-load-percent:${this.data.hostname}`,
+        )
+
+        if (!data) {
+            return 0
+        }
+
+        return parseFloat(data)
     }
 }
